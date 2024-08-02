@@ -1,0 +1,382 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block main %}
+
+<section class="collection-section">
+    <div class="container">
+        <div class="nft-collections">
+            <div class="nft-collections-title">
+                <h2 class="section-title">Get Popular Collection</h2>
+            </div>
+            <div class="nft-collections-container">
+                <div class="collection-search">
+                    <div class="collection-search-input">
+                        <input type="text" class="search-input" placeholder="Search collections">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i class="fa-solid fa-xmark remove-search-btn"></i>
+                    </div>
+                    <div class="collection-select-filter">
+                        <select name="blockchains" id="blockchains" class="filter-select">
+                            <option value="all-blockchains">All blockchains</option>
+                            {% for blockchain in blockchains %}
+                                <option value="{{ blockchain.name }}">{{ blockchain.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="filter-select">
+                            <span>Sort by</span>
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                    </div>
+                    <div class="collection-grid-switches">
+                        <div class="grid-switch">
+                            <input type="radio" name="switch" id="switch2" class="hidden" checked>
+                            <label for="switch2">
+                                <div class="switch2-icon"></div>
+                                <div class="switch2-icon"></div>
+                                <div class="switch2-icon"></div>
+                                <div class="switch2-icon"></div>
+                            </label>
+                        </div>
+                        <div class="grid-switch">
+                            <input type="radio" name="switch" id="switch3" class="hidden">
+                            <label for="switch3">
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                                <div class="switch3-icon"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-cards-filters">
+                    <div class="collection-filters">
+                        {% if categories %}
+                        <div class="collection-filter">
+                            <div class="collection-filter-title">
+                                <h3>Categories</h3>
+                            </div>
+                            <div class="collection-filter-items">
+                                {% for category in categories %}
+                                    <div class="collection-filter-item">
+                                        <label class="collection-filter-item-text" for="category-{{ category.id }}">{{ category.name }}</label>
+                                        <input class="collection-filter-checkbox hidden" id="category-{{ category.id }}" type="checkbox">
+                                        <label class="filter-check-icon" for="category-{{ category.id }}">
+                                            <i class="fa-solid fa-check check-icon"></i>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="collection-cards-pagination">
+                        <div class="collection-cards">
+                            {% for collection in collections %}
+                                <div class="collection-card">
+                                    <div class="collection-card-desc">
+                                        <div class="collection-card-title">
+                                            <a href="collection-detail.html" class="collection-card-name">
+                                                {{ collection.name }}
+                                            </a>
+                                            <p class="collection-card-creator">@{{ collection.creator.username }}</p>
+                                        </div>
+                                        <div class="collection-card-detail">
+                                            <div class="collection-creator-stats">
+                                                <div class="collection-creator-stat">
+                                                    <p>Collections</p>
+                                                    <h5>{{ collection.nfts.count }}</h5>
+                                                </div>
+                                                <div class="collection-creator-stat">
+                                                    <p>Followers</p>
+                                                    <h5>{{ collection.followers.count }}</h5>
+                                                </div>
+                                            </div>
+                                            <button class="btn-green collection-card-btn">Follow</button>
+                                        </div>
+                                    </div>
+                                    <div class="collection-card-images">
+                                        {% for nft in collection.nfts.all %}
+                                            {% if forloop.counter <= 3 %}
+                                                <a href="collection-detail.html" class="collection-card-image">
+                                                    <img src="{{ nft.image.url }}">
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if collection.nfts.count > 3 %}
+                                            <a href="collection-detail.html" class="collection-card-image">
+                                                <img src="{{ collection.nfts.all.3.image.url }}">
+                                                {% if collection.nfts.count > 4 %}
+                                                    <p class="collection-more-image">+{{ collection.nfts.count|add:'-4' }}</p>
+                                                {% endif %}
+                                            </a>
+                                        {% endif %}
+                                    </div> 
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="collection-pagination">
+                            <div class="icon-box">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </div>
+                            <div class="pagination">
+                                <a href="#">1</a>
+                                <a href="#">2</a>
+                                <a href="#">3</a>
+                            </div>
+                            <div class="icon-box">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="top-collectors-section">
+    <h2 class="section-title">Our Top Collectors</h2>
+    <div class="top-collectors-list auto-scroll">
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar3.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="top-collectors-list auto-scroll">
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+        <div class="top-collector">
+            <p class="top-collector-place"></p>
+            <div class="avatar">
+                <a href="#"><img class="avatar-img" src="/static/img/avatar3.jpeg" alt=""></a>
+                <div class="avatar-icons">
+                    <div class="verified-icon">
+                        <i class="star-icon"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="top-collector-info">
+                <h4 class="top-collector-name">Lincoln George</h4>
+                <div class="top-collector-eth">
+                    <i class="fa-brands fa-ethereum"></i>
+                    <p class="eth-value">2,798</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock main %}

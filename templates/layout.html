@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            NFTs Art
+        {% endblock title %}
+    </title>
+    <link rel="shortcut icon" href="{% static '/img/gear.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static '/css/style.css' %}">
+    <link rel="stylesheet" href="{% static '/css/responsive.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <a href="{% url 'home' %}" class="nav-brand">
+                    <h3>NFTs Art</h3>
+                </a>
+                <ul class="nav-links">
+                    <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>
+                    <li class="nav-item"><a href="roadmap.html" class="nav-link">Road Map</a></li>
+                    <li class="nav-item"><a href="ourclans.html" class="nav-link">Our Clans</a></li>
+                    <li class="nav-item"><a href="faq.html" class="nav-link">FAQ</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <div id="theme-toggle">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <a class="nav-button" href="nft-create.html"><button class="btn-green">Create</button></a>
+
+                    {% if user.is_authenticated %}
+                        <div class="avatar nav-button">
+                            <a href="{% url 'login' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
+                            <div class="avatar-icons">
+                                <div class="verified-icon">
+                                    <i class="star-icon"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}"><i class="fa-solid fa-user"></i></a>
+                    {% endif %}
+
+                    <i id="nav-menu-icon">
+                        <hr>
+                        <hr>
+                    </i>
+                </div>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <div class="nav-menu-buttons">
+                    
+                    {% if user.is_authenticated %}
+                        <div class="avatar nav-button">
+                            <a href="{% url 'login' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
+                            <div class="avatar-icons">
+                                <div class="verified-icon">
+                                    <i class="star-icon"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}"><i class="fa-solid fa-user"></i></a>
+                    {% endif %}
+
+                    <a href="nft-create.html"><button class="btn-green">Create</button></a>
+                </div>
+                <ul class="nav-menu-links">
+                    <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>
+                    <li class="nav-item"><a href="roadmap.html" class="nav-link">Road Map</a></li>
+                    <li class="nav-item"><a href="ourclans.html" class="nav-link">Our Clans</a></li>
+                    <li class="nav-item"><a href="faq.html" class="nav-link">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {% block main %}
+        {% endblock main %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer">
+                <div class="footer-logo-desc">
+                    <h3 class="footer-logo">NFTs Art</h3>
+                    <h4 class="footer-desc">Create sell, and collect <br> NFT digital art</h4>
+                </div>
+                <div class="footer-links">
+                    <ul class="footer-menu">
+                        <li><a href="{% url 'collection:list' %}" class="footer-link">Collection</a></li>
+                        <li><a href="roadmap.html" class="footer-link">Road Map</a></li>
+                        <li><a href="ourclans.html" class="footer-link">Our Clans</a></li>
+                        <li><a href="faq.html" class="footer-link">FAQ</a></li>
+                    </ul>
+                    <ul class="footer-social">
+                        <li><a href="#"><i class="fa-brands fa-discord"></i></a></li>
+                        <li><a href="#"><i class="fa-brands fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa-brands fa-facebook"></i></a></li>
+                    </ul>
+                    <div class="footer-rights">
+                        <p>2024. all right Reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static '/js/main.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block main %}
+
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <h2 class="section-title">Register</h2>
+            <form class="form" id="register-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-previews">
+                    <div class="form-preview">
+                        <h4 class="form-subtitle">Preview</h4>
+                        <div class="avatar-preview" id="avatar-preview">
+                            <div class="avatar">
+                                <img class="avatar-img" src="">
+                            </div>
+                            <h3 class="register-fullname" id="previewFullname"></h3>
+                        </div>
+                        <div class="form-control">
+                            <input type="hidden" id="avatar-input" name="avatar">
+                            {% if register_form.avatar.errors %}
+                                <div class="form-warning">{{ register_form.avatar.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-preview">
+                        <h4 class="form-subtitle">Choose avatar</h4>
+                        <div class="new-avatars" id="avatar-selection">
+                            {% for avatar in register_form.avatar.field.queryset %}
+                                <div class="avatar">
+                                    <img class="avatar-img" src="{{ avatar.image.url }}" data-avatar-id="{{ avatar.id }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>                        
+                <div class="form-inputs-container">
+                    <div class="form-inputs">
+                        <div class="form-control">
+                            <div class="form-input-box">
+                                <input type="text" id="fullNameInput" name="fullname" class="form-input" required>
+                                <label for="fullname" class="form-label">Full name</label>
+                            </div>
+                            {% if register_form.fullname.errors %}
+                                <div class="form-warning">{{ register_form.fullname.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            <div class="form-input-box">
+                                <input type="text" id="register-username" name="username" class="form-input" required>
+                                <label for="username" class="form-label">Username</label>
+                            </div>
+                            {% if register_form.username.errors %}
+                                <div class="form-warning">{{ register_form.username.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            <div class="form-input-box">
+                                <input type="password" id="password1" name="password1" class="form-input" required >
+                                <label for="password1" class="form-label">Password</label>
+                            </div>
+                            {% if register_form.password1.errors %}
+                                <div class="form-warning">{{ register_form.password1.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            <div class="form-input-box">
+                                <input type="password" id="password2" name="password2" class="form-input" required>
+                                <label for="password2" class="form-label">Confirm Password</label>
+                            </div>
+                            {% if register_form.password2.errors %}
+                                <div class="form-warning">{{ register_form.password2.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% if register_form.non_field_errors %}
+                            <p class="form-warning">{{ register_form.non_field_errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" name="register" class="form-button btn-green">Register</button>
+                    </div>
+                    <div class="form-checkboxes">
+                        <div class="form-info">
+                            <label class="form-label">Have an account already?</label>
+                            <h5 id="login-btn">Log in</h5>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="popup-section" id="login-popup">
+    <div class="popup">
+        <h2 class="popup-title">Login</h2>
+        <form class="login-form" method="post">
+            {% csrf_token %}
+            <div class="form-control">
+                <div class="form-input-box">
+                    <input type="text" name="username" id="username" class="form-input" required>
+                    <label for="username" class="form-label">Username</label>
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                {% if login_form.username.errors %}
+                    <p class="form-warning">{{ login_form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <div class="form-control">
+                <div class="form-input-box">
+                    <input type="password" name="password" id="password" class="form-input" required>
+                    <label for="password" class="form-label">Password</label>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                {% if login_form.password.errors %}
+                    <p class="form-warning">{{ login_form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% if login_form.non_field_errors %}
+                <p class="form-warning">{{ login_form.non_field_errors.0 }}</p>
+            {% endif %}
+            <button type="submit" name="login" class="btn-green">Login</button>
+            <button type="button" class="btn-outline-green">Forgot Password?</button>
+            <div class="register-link">
+                <p>Don't have an account? <span id="register-btn">Register</span></p>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock main %}

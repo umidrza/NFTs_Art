@@ -1,0 +1,13 @@
+-------------- Frontend ----------------
+
+-hovers
+-responsive text sizes
+
+--- pages ---
+
+-nft collection
+-detail collection
+-our clans
+-connect wallet
+
+
