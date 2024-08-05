@@ -1,40 +1,145 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Collections
+    Collection detail
 {% endblock title %}
 
 {% block main %}
 
 <section class="collection-section">
     <div class="container">
-        <div class="nft-collections">
-            <div class="nft-collections-title">
-                <h2 class="section-title">Get Popular Collection</h2>
+        <div class="collection-cards-filters">
+            <div class="collection-creators-filters">
+                <div class="collection-creators">
+                    <h2 class="collection-creators-title">The Best Collectors for <br>NFTs</h2>
+                    <div class="collection-creator">
+                        <div class="avatar">
+                            <img class="avatar-img" src="{{ collection.creator.avatar.image.url }}">
+                            <div class="avatar-icons">
+                                <div class="verified-icon">
+                                    <i class="star-icon"></i>
+                                    <i class="fa-solid fa-check check-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collection-creator-desc">
+                            <div class="collection-creator-info">
+                                <h4 class="collection-creator-fullname">{{ collection.creator.fullname }}</h4>
+                                <p class="collection-creator-username">@{{ collection.creator.username }}</p>
+                            </div>
+                            <div class="collection-creator-detail">
+                                <div class="collection-creator-stats">
+                                    <div class="collection-creator-stat">
+                                        <p>Collections</p>
+                                        <h5>{{ collection.creator.collections.count }}</h5>
+                                    </div>
+                                    <div class="collection-creator-stat">
+                                        <p>Followers</p>
+                                        <h5>{{ collection.creator.followers.count }}</h5>
+                                    </div>
+                                </div>
+                                {% if user == collection.creator %} 
+                                    <a class="btn-outline-green collection-card-btn">My collections</a>
+                                {% elif user in collection.creator.followers.all %}
+                                    <form action="{% url 'collection:unfollow_creator' collection.creator.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-outline-green collection-card-btn follow-btn">Following</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'collection:follow_creator' collection.creator.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-green collection-card-btn follow-btn">Follow</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collection-filters">
+                    <div class="collection-filter dropdown">
+                        <div class="collection-filter-title dropdown-btn">
+                            <h3>Status</h3>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
+                        <div class="collection-filter-items dropdown-content opened">
+                            <div class="collection-filter-item">
+                                <label class="collection-filter-item-text" for="status-auction" >On Auction</label>
+                                <input class="collection-filter-checkbox hidden" id="status-auction" type="checkbox" name="status" value="auction">
+                                <label class="filter-check-icon" for="status-auction"><i class="fa-solid fa-check check-icon"></i></label>
+                            </div>
+                            <div class="collection-filter-item">
+                                <label class="collection-filter-item-text" for="status-expired" >Expired</label>
+                                <input class="collection-filter-checkbox hidden" id="status-expired" type="checkbox" name="status" value="expired">
+                                <label class="filter-check-icon" for="status-expired"><i class="fa-solid fa-check check-icon"></i></label>
+                            </div>
+                            <div class="collection-filter-item">
+                                <label class="collection-filter-item-text" for="status-not-on-sale">Not on sale</label>
+                                <input class="collection-filter-checkbox hidden" id="status-not-on-sale" type="checkbox" name="status" value="not-on-sale">
+                                <label class="filter-check-icon" for="status-not-on-sale"><i class="fa-solid fa-check check-icon"></i></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collection-filter dropdown">
+                        <div class="collection-filter-title dropdown-btn">
+                            <h3>Price</h3>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
+                        <div class="dropdown-content opened">
+                            <div class="collection-filter-items-fd-row">
+                                <input type="number" class="filter-input" placeholder="Min" id="min-value">
+                                <p class="filter-input-text">To</p>
+                                <input type="number" class="filter-input" placeholder="Max" id="max-value">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collection-filter dropdown">
+                        <div class="collection-filter-title dropdown-btn">
+                            <h3>Currency</h3>
+                            <i class="fa-solid fa-chevron-down arrow-icon"></i>
+                        </div>
+                        <div class="collection-filter-items dropdown-content opened">
+                            <div class="collection-filter-item">
+                                <label class="collection-filter-item-text" for="currency-all">Show all</label>
+                                <input class="collection-filter-radio hidden" id="currency-all" type="radio" name="currency" value="all" checked>
+                                <label class="filter-check-icon" for="currency-all"><i class="radio-icon"></i></label>
+                            </div>
+                            {% for currency in currencies %}
+                                <div class="collection-filter-item">
+                                    <label class="collection-filter-item-text currency-text" for="currency-{{ currency.symbol }}">{{ currency.symbol }}</label>
+                                    <input class="collection-filter-radio hidden" id="currency-{{ currency.symbol }}" type="radio" name="currency" value="{{ currency.symbol }}">
+                                    <label class="filter-check-icon" for="currency-{{ currency.symbol }}"><i class="radio-icon"></i></label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="nft-collections-container">
+            <div class="collection-cards-pagination">
                 <div class="collection-search">
                     <div class="collection-search-input">
-                        <input type="text" class="search-input" placeholder="Search collections" id="collection-search">
+                        <input type="text" class="search-input" placeholder="Search collections" id="nft-search">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <i class="fa-solid fa-xmark remove-search-btn hidden"></i>
                     </div>
                     <div class="collection-select-filter">
-                        <select name="blockchains" id="blockchains" class="filter-select">
-                            <option value="all">All blockchains</option>
-                            {% for blockchain in blockchains %}
-                                <option value="{{ blockchain.id }}">{{ blockchain.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <select id="sort-by-collection" class="filter-select">
+                        <select id="sort-by" class="filter-select">
                             <option value="default">Sort By</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
                             <option value="name-asc">Name: A to Z</option>
                             <option value="name-desc">Name: Z to A</option>
                         </select>
                     </div>
                     <div class="collection-grid-switches">
                         <div class="grid-switch">
-                            <input type="radio" name="switch" id="switch2" class="hidden" checked>
+                            <input type="radio" name="switch" id="switch1" class="hidden" checked>
+                            <label for="switch1">
+                                <div class="switch1-icon"></div>
+                                <div class="switch1-icon"></div>
+                            </label>
+                        </div>
+                        <div class="grid-switch">
+                            <input type="radio" name="switch" id="switch2" class="hidden">
                             <label for="switch2">
                                 <div class="switch2-icon"></div>
                                 <div class="switch2-icon"></div>
@@ -58,99 +163,46 @@
                         </div>
                     </div>
                 </div>
-                <div class="collection-cards-filters">
-                    <div class="collection-filters">
-                        {% if categories %}
-                        <div class="collection-filter">
-                            <div class="collection-filter-title">
-                                <h3>Categories</h3>
+                <div class="collection-nft-cards">
+                    {% for nft in nfts %}
+                        <div class="nft-card" data-status="{{ nft.status }}" data-currency="{{ nft.auction.currency.symbol }}" data-price="{{ nft.auction.price }}">
+                            <h4 class="nft-name">{{ nft.name }}</h4>
+                            <div class="nft-card-image">
+                                <img src="{{ nft.image.url }}" class="nft-image">
                             </div>
-                            <div class="collection-filter-items">
-                                {% for category in categories %}
-                                    <div class="collection-filter-item">
-                                        <label class="collection-filter-item-text" for="category-{{ category.id }}">{{ category.name }}</label>
-                                        <input class="collection-filter-checkbox hidden" id="category-{{ category.id }}" type="checkbox" name="category" value="{{ category.id }}">
-                                        <label class="filter-check-icon" for="category-{{ category.id }}">
-                                            <i class="fa-solid fa-check check-icon"></i>
-                                        </label>
+                            <div class="nft-detail">
+                                {% if nft.auction %}
+                                    <div class="nft-highest-bid">
+                                        <p>Highest bid</p>
+                                        <h4 class="nft-price">{{nft.auction.price}} {{nft.auction.currency.symbol}}</h4>
                                     </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% if collections %}
-                    <div class="collection-cards-pagination">
-                        <div class="collection-cards">
-                            {% for collection in collections %}
-                                <div class="collection-card" data-category="{{ collection.category.id }}" data-blockchain="{{ collection.blockchain.id }}">
-                                    <div class="collection-card-desc">
-                                        <div class="collection-card-title">
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-name">
-                                                {{ collection.name }}
-                                            </a>
-                                            <p class="collection-card-creator">@{{ collection.creator.username }}</p>
-                                        </div>
-                                        <div class="collection-card-detail">
-                                            <div class="collection-creator-stats">
-                                                <div class="collection-creator-stat">
-                                                    <p>Collections</p>
-                                                    <h5>{{ collection.creator.collections.count }}</h5>
-                                                </div>
-                                                <div class="collection-creator-stat">
-                                                    <p>Followers</p>
-                                                    <h5>{{ collection.creator.followers.count }}</h5>
-                                                </div>
-                                            </div>
-                                            {% if user in collection.creator.followers.all %}
-                                                <form action="{% url 'collection:unfollow_creator' collection.creator.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn-outline-green collection-card-btn follow-btn">Following</button>
-                                                </form>
-                                            {% elif user is not collection.creator %}
-                                                <form action="{% url 'collection:follow_creator' collection.creator.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn-green collection-card-btn follow-btn">Follow</button>
-                                                </form>
-                                            {% endif %}
-                                        </div>
+                                    <div class="nft-time">
+                                        <span>{{nft.auction.end_time}}</span>
                                     </div>
-                                    <div class="collection-card-images">
-                                        {% for nft in collection.nfts.all %}
-                                            {% if forloop.counter <= 3 %}
-                                                <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                    <img src="{{ nft.image.url }}">
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if collection.nfts.count > 3 %}
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                <img src="{{ collection.nfts.all.3.image.url }}">
-                                                {% if collection.nfts.count > 4 %}
-                                                    <p class="collection-more-image">+{{ collection.nfts.count|add:'-4' }}</p>
-                                                {% endif %}
-                                            </a>
-                                        {% endif %}
-                                    </div> 
-                                </div>
-                            {% endfor %}
-                        </div>
-                        <div class="collection-pagination">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </div>
-                            <div class="pagination">
-                                <a href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                            </div>
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-right"></i>
+                                {% else %}
+                                    <div class="not-on-sale">
+                                        <h4>Not on sale</h4>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
+                {% if nfts.count > 12 %}
+                    <div class="collection-pagination">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </div>
+                        <div class="pagination">
+                            <a href="#">1</a>
+                            <a href="#">2</a>
+                            <a href="#">3</a>
+                        </div>
+                        <div class="icon-box">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

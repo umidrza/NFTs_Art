@@ -1,13 +1,12 @@
 -------------- Frontend ----------------
 
 -hovers
--responsive text sizes
+-responsive
 
---- pages ---
+-------------- Backend -----------------
 
--nft collection
--detail collection
--our clans
--connect wallet
+-login bug
+-nft sell - time
 
 
+-nft detail

@@ -1601,7 +1601,7 @@ tr.spacing td {
     flex-direction: column;
     align-items: flex-start;
     gap: 56px;
-    width: 260px;
+    width: 265px;
 }
 
 .collection-creators {
@@ -1715,7 +1715,7 @@ tr.spacing td {
     flex-direction: column;
     align-items: flex-start;
     gap: 32px;
-    width: 260px;
+    width: 265px;
 }
 
 .collection-filter {
@@ -1771,6 +1771,10 @@ tr.spacing td {
     line-height: 24px;
     letter-spacing: 0.08px;
     cursor: pointer;
+}
+
+.currency-text{
+    text-transform: uppercase;
 }
 
 .filter-check-icon {
@@ -1843,7 +1847,7 @@ tr.spacing td {
 }
 
 .filter-input {
-    width: 70px;
+    width: 100px;
     height: 48px;
     padding: 8px;
     border-radius: 16px;
@@ -1876,7 +1880,7 @@ tr.spacing td {
     flex-direction: column;
     align-items: flex-start;
     gap: 40px;
-    width: calc(100% - 260px - var(--collection-filters-cards-gap));
+    width: calc(100% - 265px - var(--collection-filters-cards-gap));
 }
 
 .collection-search {
@@ -2121,11 +2125,12 @@ tr.spacing td {
     display: flex;
     padding: 16px 8px;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 16px;
     border-radius: 16px;
     background: var(--background-primary-color);
     box-shadow: 6px 12px 24px 0px rgba(86, 115, 150, 0.08);
+    aspect-ratio: 1 / 1.6;
 }
 
 .nft-name {
@@ -2154,13 +2159,19 @@ tr.spacing td {
     border-radius: 12px;
     background: var(--grayscale-10-95);
     width: 100%;
+    height: 66px;
+    overflow: hidden;
 }
 
-.nft-highest-bid {
+.nft-highest-bid,
+.not-on-sale {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
     gap: 4px;
+    height: 66px;
+    overflow: hidden;
 }
 
 .nft-highest-bid p {
@@ -2171,12 +2182,20 @@ tr.spacing td {
     letter-spacing: 0.07px;
 }
 
-.nft-highest-bid h4 {
+.nft-highest-bid h4, 
+.not-on-sale h4{
     color: var(--text-primary-color);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     line-height: 28px;
     letter-spacing: 0.1px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.not-on-sale{
+    align-items: center;
+    width: 100%;
 }
 
 .nft-time {
@@ -2187,6 +2206,12 @@ tr.spacing td {
     border-radius: 8px;
     background: var(--light-green);
     backdrop-filter: blur(10px);
+    white-space: nowrap;
+    margin-left: 2px;
+}
+
+.nft-time.expired{
+    background: #EB3F5E;
 }
 
 .nft-time span {
@@ -2194,7 +2219,11 @@ tr.spacing td {
     font-size: 12px;
     font-weight: 600;
     line-height: 20px;
-    letter-spacing: 0.06px;
+    letter-spacing: 0.06px; 
+}
+
+.nft-time.expired span{
+    color: #fff;
 }
 
 .collection-pagination {
@@ -3288,7 +3317,7 @@ body:has(.notfound-section) {
     background: #52B4C1;
     color: var(--Background-04, #FFF);
     text-align: center;
-    font-family: Poppins;
+    font-family: "Poppins", sans-serif;
     font-size: 10px;
     font-weight: 500;
     line-height: 16px;

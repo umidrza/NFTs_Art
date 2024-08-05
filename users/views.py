@@ -21,7 +21,7 @@ def login_register_view(request):
         elif 'login' in request.POST:
             login_form = LoginForm(request.POST)
             if login_form.is_valid():
-                username = login_form.cleaned_data.get('username')
+                username = login_form.cleaned_data.get('username').lower()
                 password = login_form.cleaned_data.get('password')
 
                 user = authenticate(username=username, password=password)
