@@ -113,12 +113,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelectorAll('.like-btn').forEach(likeBtn => {
-        likeBtn.addEventListener('click', () => {
-            likeBtn.classList.toggle('fa-regular');
-            likeBtn.classList.toggle('fa-solid');
-        })
-    });
+    // document.querySelectorAll('.like-btn').forEach(likeBtn => {
+    //     likeBtn.addEventListener('click', () => {
+    //         likeBtn.classList.toggle('fa-regular');
+    //         likeBtn.classList.toggle('fa-solid');
+    //     })
+    // });
 
     document.querySelectorAll('.popup-close-btn').forEach(popupCloseBtn => {
         popupCloseBtn.addEventListener('click', () => {
@@ -313,6 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const currencyFilters = collectionFilters.querySelectorAll('input[name="currency"]');
             const minValueFilter = document.getElementById('min-value');
             const maxValueFilter = document.getElementById('max-value');
+            const sortByFilter = document.getElementById('sort-by');
             statusFilters.forEach(cb => cb.addEventListener('change', FilterNfts));
             currencyFilters.forEach(rb => rb.addEventListener('change', FilterNfts));
             nftSearchInput.addEventListener('input', FilterNfts);
@@ -323,8 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             minValueFilter.addEventListener('input', FilterNfts);
             maxValueFilter.addEventListener('input', FilterNfts);
-
-            const sortByFilter = document.getElementById('sort-by');
             sortByFilter.addEventListener('change', FilterNfts);
 
             function FilterNfts() {
@@ -516,11 +515,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     else {
                         nftTimeText.textContent = formatDateToISOString(nftEndTime);
                     }
-                } else {
-                    console.error(`Invalid date: ${nftTimeText.textContent}`);
                 }
-            } else {
-                console.error(`Invalid date format: ${nftTimeText.textContent}`);
             }
         });
 

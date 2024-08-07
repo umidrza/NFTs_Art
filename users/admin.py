@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Avatar
+from .models import User, Avatar, Follow
 
 admin.site.register(Avatar)
+admin.site.register(Follow)
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):

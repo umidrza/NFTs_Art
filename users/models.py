@@ -48,7 +48,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ForeignKey(Avatar, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    followers = models.ManyToManyField('self', symmetrical=False, related_name='following', blank=True)
 
     objects = UserManager()
 
@@ -72,3 +71,17 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.save()
         except ValidationError as e:
             raise ValidationError(f'Error updating profile: {e}')
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.follower.username} follows {self.following.username}'
+
+    class Meta:
+        unique_together = ('follower', 'following')
+        verbose_name = 'Follow'
+        verbose_name_plural = 'Follows'

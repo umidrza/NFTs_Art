@@ -836,6 +836,12 @@ footer {
     gap: 12px;
 }
 
+.auction-actions button{
+    background-color: transparent;
+    border: none;
+    color: var(--text-primary-color);
+}
+
 .auction-action-text {
     color: var(--grayscale-60);
     font-size: 14px;

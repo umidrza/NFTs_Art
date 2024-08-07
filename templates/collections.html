@@ -99,19 +99,14 @@
                                                 </div>
                                                 <div class="collection-creator-stat">
                                                     <p>Followers</p>
-                                                    <h5>{{ collection.creator.followers.count }}</h5>
+                                                    <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
                                                 </div>
                                             </div>
-                                            {% if user in collection.creator.followers.all %}
-                                                <form action="{% url 'collection:unfollow_creator' collection.creator.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn-outline-green collection-card-btn follow-btn">Following</button>
-                                                </form>
-                                            {% elif user is not collection.creator %}
-                                                <form action="{% url 'collection:follow_creator' collection.creator.id %}" method="post">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="btn-green collection-card-btn follow-btn">Follow</button>
-                                                </form>
+                                            {% if request.user == collection.creator %}
+                                            {% elif collection.creator in following %}
+                                                <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
+                                            {% else %}
+                                                <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -393,3 +388,35 @@
 </section>
 
 {% endblock main %}
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function(){
+        $('.follow-btn').click(function(){
+            const userId = $(this).data('user-id');
+            const button = $(this);
+            const followersCountElement = button.closest('.collection-card-detail').find('.creator-followers-count');
+            let followersCount = parseInt(followersCountElement.text());
+            let url = '{% url "user:follow" 0 %}';
+            url = url.replace('0', userId);
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                success: function(data) {
+                    if (data.status == 'followed') {
+                        button.removeClass('btn-green').addClass('btn-outline-green').text('Following');
+                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount + 1);
+                    } else if (data.status == 'unfollowed') {
+                        button.removeClass('btn-outline-green').addClass('btn-green').text('Follow');
+                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount - 1);
+                    }
+                },
+            });
+        });
+    });
+</script>
+
+{% endblock scripts %}

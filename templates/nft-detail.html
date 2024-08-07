@@ -1,0 +1,372 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    NFT Detail
+{% endblock title %}
+
+{% block main %}
+
+<section class="auction-detail-section">
+    <div class="container">
+        <div class="auction">
+            <div class="auction-image">
+                <img src="{{ nft.image.url }}">
+                <div class="auction-detail-desc">
+                    <span class="extra-content" data-length="300">{{ nft.description }}</span>
+                    <span class="show-more">Show more</span>
+                </div>
+                <div class="auction-actions">
+                    <div class="auction-action">
+                        {% if liked %}
+                        <i class="fa-solid fa-heart like-btn"></i>
+                        {% else %}
+                        <i class="fa-regular fa-heart like-btn"></i>
+                        {% endif %}
+                        <p class="auction-action-text like-count">{{ nft.likes.count }}</p>
+                    </div>
+                    <div class="auction-action">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        <p class="auction-action-text">Share</p>
+                    </div>
+                    <div class="auction-action">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <p class="auction-action-text">Refresh</p>
+                    </div>
+                </div>
+            </div>
+            <div class="auction-desc">
+                <div class="auction-info">
+                    {% if nft.auctions.exists %}
+                        <div class="auction-badge">
+                            <i class="live-icon"></i>
+                            <h4 class="auction-text-black">Live Now</h4>
+                        </div>
+                    {% endif %}
+                    <div class="auction-nft-desc">
+                        <div class="nft-auction-detail">
+                            {% if collection %}
+                                <p class="nft-auction-category">{{ collection.name }}</p>
+                            {% endif %}
+                            <h2 class="nft-auction-name">{{ nft.name }}</h2>
+                        </div>
+                        {% if nft.auctions.exists %}
+                        <div class="auction-details">
+                            <div class="auction-detail">
+                                <p class="auction-text-grey">Current bid</p>
+                                <h4 class="auction-text-black eth">{{ nft.auctions.first.price }}</h4>
+                                <p class="auction-text-grey usd"></p>
+                            </div>
+                            <div class="auction-detail">
+                                <p class="auction-text-grey">Auction ending in</p>
+                                <h4 class="auction-text-black">{{ nft.auctions.first.end_time }}</h4>
+                                <p class="auction-text-grey">Bids: {{ nft.auctions.first.bids.count}} </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="nft-auction-creator">
+                            <div class="nft-auction-card-section">
+                                <p class="auction-text-grey">Creator</p>
+                                <div class="auction-nft-card">
+                                    <div class="avatar auction-avatar">
+                                        <a href="#"><img class="avatar-img" src="{{ nft.creator.avatar.image.url }}"></a>
+                                        <div class="avatar-icons">
+                                            <div class="verified-icon">
+                                                <i class="star-icon"></i>
+                                                <i class="fa-solid fa-check check-icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="nft-auction-creator-name">{{ nft.creator.fullname }}</p>
+                                </div>
+                            </div>
+                            <div class="nft-auction-card-section">
+                                <p class="auction-text-grey">Collection</p> 
+                                <div class="auction-nft-card">
+                                    <div class="avatar auction-avatar">
+                                        <a href="#"><img class="avatar-img" src="{{ collection.creator.avatar.image.url }}"></a>
+                                        <div class="avatar-icons">
+                                            <div class="verified-icon">
+                                                <i class="star-icon"></i>
+                                                <i class="fa-solid fa-check check-icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="nft-auction-creator-name">{{ collection.creator.fullname }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if nft.auctions.exists %}
+                    <div class="auction-terms">
+                        <div class="term-check-icon">
+                            <i class="fa-solid fa-check check-icon hidden"></i>
+                        </div>
+                        <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
+                    </div>
+                    <div class="auction-buttons">
+                        <button class="auction-button btn-green" disabled>Purchase now</button>
+                        <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                    </div>
+                    <div class="auction-charts">
+                        <div class="auction-chart dropdown">
+                            <div class="chart-title dropdown-btn">
+                                <h3>Price History</h3>
+                                <i class="fa-solid fa-arrow-down arrow-icon"></i>
+                            </div>
+                            <div class="price-history-chart-container dropdown-content opened">
+                                <div class="chart-subtitle">
+                                    <h4>All Time Avg. Price</h4>
+                                    <select class="chart-select">
+                                        <option value="1">7 days</option>
+                                        <option value="2">1 month</option>
+                                        <option value="3">1 year</option>
+                                        <option value="4">All times</option>
+                                    </select>
+                                </div>
+                                <div class="price-history-chart">
+                                    <div class="prices">
+                                        <p class="chart-text">2.5</p>
+                                        <p class="chart-text">2</p>
+                                        <p class="chart-text">1.5</p>
+                                        <p class="chart-text">1</p>
+                                        <p class="chart-text">0.5</p>
+                                        <p class="chart-text">0</p>
+                                    </div>
+                                    <div class="dates">
+                                        <p class="chart-text">15/9</p>
+                                        <p class="chart-text">16/9</p>
+                                        <p class="chart-text">17/9</p>
+                                        <p class="chart-text">18/9</p>
+                                        <p class="chart-text">19/9</p>
+                                        <p class="chart-text">20/9</p>
+                                        <p class="chart-text">21/9</p>
+                                    </div>
+                                    <div class="lines">
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                    </div>
+                                    <div class="chart">
+                                        <svg class="chart-line1" xmlns="http://www.w3.org/2000/svg" width="657"
+                                            height="200" viewBox="0 0 657 200" fill="none">
+                                            <path
+                                                d="M48.6568 91.6627L11.3589 112.275C4.35057 116.148 0 123.523 0 131.53V195H657.32V114.17C657.32 107.01 653.836 100.298 647.98 96.1781L608.343 68.2885C599.764 62.2521 588.117 63.1123 580.517 70.3434L536.226 112.49C532.136 116.382 526.706 118.552 521.06 118.552H487.272C478.273 118.552 470.181 113.072 466.842 104.715L438.863 34.6921C434.789 24.4961 423.822 18.8649 413.162 21.496L399.037 24.9825C391.44 26.8575 383.42 24.5567 377.972 18.9401L366.626 7.24147C357.638 -2.02622 342.638 -1.59806 334.193 8.16727L279.192 71.7668C272.07 80.0022 259.995 81.7894 250.793 75.9701L194.582 40.4237C183.917 33.6795 169.777 37.269 163.62 48.2833L134.549 100.291C128.83 110.521 116.095 114.472 105.59 109.275L69.0536 91.1993C62.5896 88.0013 54.9688 88.1745 48.6568 91.6627Z"
+                                                fill="url(#paint0_linear_91_2002)" fill-opacity="0.32" />
+                                            <defs>
+                                                <linearGradient id="paint0_linear_91_2002" x1="328.351" y1="-10"
+                                                    x2="328.478" y2="186" gradientUnits="userSpaceOnUse">
+                                                    <stop stop-color="#DCF06B" />
+                                                    <stop offset="1" stop-color="#DCF06B" stop-opacity="0" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                        <svg class="chart-line2" xmlns="http://www.w3.org/2000/svg" width="657"
+                                            height="200" viewBox="0 0 657 200" fill="none">
+                                            <path
+                                                d="M1 120.003L49.5974 93.0392C55.9258 89.5279 63.5763 89.3537 70.058 92.5732L106.482 110.666C117.004 115.892 129.776 111.929 135.491 101.664L164.529 49.5072C170.682 38.4558 184.865 34.8565 195.543 41.6361L251.62 77.2396C260.839 83.0923 272.955 81.298 280.081 73.0247L334.996 9.27087C343.445 -0.537424 358.494 -0.966864 367.488 8.34371L378.772 20.0251C384.224 25.6692 392.27 27.9817 399.887 26.0941L413.913 22.6184C424.589 19.9727 435.578 25.6182 439.645 35.8376L467.623 106.138C470.954 114.509 479.054 120.003 488.064 120.003H521.777C527.438 120.003 532.881 117.821 536.974 113.91L581.202 71.6569C588.809 64.3886 600.499 63.5247 609.093 69.5956L658 104.146"
+                                                stroke="#171717" stroke-width="1.5" stroke-linecap="round" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="auction-chart dropdown">
+                            <div class="chart-title dropdown-btn">
+                                <h3>Listings</h3>
+                                <i class="fa-solid fa-arrow-down arrow-icon"></i>
+                            </div>
+                            <div class="dropdown-content opened auction-table">
+                                <table class="sales-nfts-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit Price</th>
+                                            <th>USD</th>
+                                            <th>Quantity</th>
+                                            <th>Expiration</th>
+                                            <th>From</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for auction in nft.auctions.all %}
+                                        <tr>
+                                            <td class="eth"> 
+                                                <i class="fa-brands fa-ethereum"></i>
+                                                {{ auction.price }}
+                                            </td>
+                                            <td class="usd"></td>
+                                            <td>{{ auction.quantity }}</td>
+                                            <td>{{ auction.end_time }}</td>
+                                            <td>{{ auction.saler }}</td>
+                                            <td>
+                                                <button class="btn-outline-green">Buy</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="spacing">
+                                            <td></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% if nft.auctions.first.bids.exists %}
+                        <div class="auction-chart dropdown">
+                            <div class="chart-title dropdown-btn">
+                                <h3>Offers</h3>
+                                <i class="fa-solid fa-arrow-down arrow-icon"></i>
+                            </div>
+                            <div class="dropdown-content opened auction-table">
+                                <table class="sales-nfts-table ">
+                                    <thead>
+                                        <tr>
+                                            <th>Unit Price</th>
+                                            <th>USD</th>
+                                            <th>Quantity</th>
+                                            <th>Floor Difference</th>
+                                            <th>Expiration</th>
+                                            <th>From</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bid in nft.auctions.first.bids.all %}
+                                            <tr>
+                                                <td class="eth">
+                                                    <i class="fa-brands fa-ethereum"></i>
+                                                    {{ bid.amount }}
+                                                </td>
+                                                <td class="usd"></td>
+                                                <td>{{ bid.quantity }}</td>
+                                                <td>12% below</td>
+                                                <td>{{ bid.expiration }}</td>
+                                                <td>{{ bid.bidder }}</td>
+                                            </tr>
+                                            <tr class="spacing">
+                                                <td></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="popular-collections-section">
+    <div class="container">
+        <div class="popular-collections">
+            <div class="popular-collections-header">
+                <h2 class="section-title">Get Popular Collection</h2>
+                <a href="#" class="see-all">See all</a>
+            </div>
+            <div class="popular-collection-cards">
+                <div class="nft-card">
+                    <h4 class="nft-name">Human Leaf #0121</h4>
+                    <div class="nft-card-image">
+                        <img src="/static/img/image4.jpeg" alt="" class="nft-image">
+                    </div>
+                    <div class="nft-detail">
+                        <div class="nft-highest-bid">
+                            <p>Highest bid</p>
+                            <h4>0.56 ETH</h4>
+                        </div>
+                        <div class="nft-time">
+                            <span>04:45:32</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="nft-card">
+                    <h4 class="nft-name">Human Leaf #0122</h4>
+                    <div class="nft-card-image">
+                        <img src="/static/img/image2.jpeg" alt="" class="nft-image">
+                    </div>
+                    <div class="nft-detail">
+                        <div class="nft-highest-bid">
+                            <p>Highest bid</p>
+                            <h4>0.56 ETH</h4>
+                        </div>
+                        <div class="nft-time">
+                            <span>04:45:32</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="nft-card">
+                    <h4 class="nft-name">Human Leaf #0123</h4>
+                    <div class="nft-card-image">
+                        <img src="/static/img/image1.jpeg" alt="" class="nft-image">
+                    </div>
+                    <div class="nft-detail">
+                        <div class="nft-highest-bid">
+                            <p>Highest bid</p>
+                            <h4>0.56 ETH</h4>
+                        </div>
+                        <div class="nft-time">
+                            <span>04:45:32</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="nft-card">
+                    <h4 class="nft-name">Human Leaf #0124</h4>
+                    <div class="nft-card-image">
+                        <img src="/static/img/image3.jpeg" alt="" class="nft-image">
+                    </div>
+                    <div class="nft-detail">
+                        <div class="nft-highest-bid">
+                            <p>Highest bid</p>
+                            <h4>0.56 ETH</h4>
+                        </div>
+                        <div class="nft-time">
+                            <span>04:45:32</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock main %}
+
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function(){
+    $('.like-btn').click(function(){
+        var likeButton = $(this);
+        var likeCountSpan = likeButton.siblings('.like-count');
+        var currentCount = parseInt(likeCountSpan.text(), 10);
+
+        $.ajax({
+            url: '{% url "collection:like_nft" nft.id %}',
+            method: 'POST',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function() {
+                likeButton.toggleClass('fa-solid fa-regular');
+
+                if (likeButton.hasClass('fa-solid')) {
+                    likeCountSpan.text(currentCount + 1);
+                } else {
+                    likeCountSpan.text(currentCount - 1);
+                }
+            },
+        });
+    });
+    });
+</script>
+
+{% endblock scripts %}

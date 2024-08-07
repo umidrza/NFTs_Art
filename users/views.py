@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from .forms import RegisterForm, LoginForm
-from .models import User
+from django.contrib.auth.decorators import login_required
+from .models import User, Follow
+from django.http import JsonResponse
 
 def login_register_view(request):
     register_form = RegisterForm()
@@ -32,3 +34,19 @@ def login_register_view(request):
                     login_form.add_error(None, 'Invalid username or password')
 
     return render(request, 'login.html', {'register_form': register_form, 'login_form': login_form})
+
+
+@login_required
+def follow_user(request, user_id):
+    user_to_follow = get_object_or_404(User, id=user_id)
+
+    if user_to_follow == request.user:
+        return JsonResponse({'status': 'same-account'})
+
+    follow, created = Follow.objects.get_or_create(follower=request.user, following=user_to_follow)
+    if not created:
+        follow.delete()
+        return JsonResponse({'status': 'unfollowed'})
+    
+    return JsonResponse({'status': 'followed'})
+
