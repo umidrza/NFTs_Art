@@ -113,13 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // document.querySelectorAll('.like-btn').forEach(likeBtn => {
-    //     likeBtn.addEventListener('click', () => {
-    //         likeBtn.classList.toggle('fa-regular');
-    //         likeBtn.classList.toggle('fa-solid');
-    //     })
-    // });
-
     document.querySelectorAll('.popup-close-btn').forEach(popupCloseBtn => {
         popupCloseBtn.addEventListener('click', () => {
             popupCloseBtn.closest('.popup-section').classList.remove('active');
@@ -131,6 +124,30 @@ document.addEventListener('DOMContentLoaded', function () {
         const usdAmount = convertEthToUsd(parseFloat(eth.textContent));
         usd.textContent = `$${usdAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     });
+
+    document.querySelectorAll('.countdown').forEach(countdownElement => {
+        const endTime = new Date(countdownElement.getAttribute('data-date')).getTime();
+        const now = new Date().getTime();
+        const timeDifference = endTime - now;
+
+        if (timeDifference > 0) {
+            const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (countdownElement.classList.contains('days')){
+                countdownString = `${days} days`;
+            }
+            else{
+                countdownString = `${days.toString().padStart(2, '0')}d : ${hours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m`;
+            }
+            countdownElement.textContent = countdownString;
+            
+        } else {
+            countdownElement.textContent = 'Expired';
+            countdownElement.classList.add('expired');
+        }
+    })
 
     const termCheckbox = document.querySelector('.term-check-icon');
     if (termCheckbox) {
@@ -199,22 +216,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         priceInput.addEventListener('input', () => {
-            const currency = currencySelect.value;
+            const currency = currencySelect.textContent;
             const price = +parseFloat(priceInput.value).toFixed(2) || 0;
             priceDisplay.textContent = `${price} ${currency}`;
         });
 
-        document.getElementById('complete-listing-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('listing-popup').classList.add('active');
-            popupEndTime.textContent = endTimeInput.value;
-            popupPrice.textContent = priceDisplay.textContent;
-        });
+        // document.getElementById('complete-listing-btn').addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     document.getElementById('listing-popup').classList.add('active');
+        //     popupEndTime.textContent = endTimeInput.value;
+        //     popupPrice.textContent = priceDisplay.textContent;
+        // });
 
-        document.getElementById('sign-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('completed-popup').classList.add('active');
-        });
+        // document.getElementById('sign-btn').addEventListener('click', (e) => {
+        //     e.preventDefault();
+        //     document.getElementById('completed-popup').classList.add('active');
+        // });
     }
 
     if (document.getElementById('register-form')) {
@@ -300,7 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const collectionSection = document.querySelector('.collection-section');
     if (collectionSection) {
         const collectionFilters = collectionSection.querySelector('.collection-cards-filters');
-        const nftTimes = collectionSection.querySelectorAll('.nft-time');
         const searchRemoveBtn = collectionSection.querySelector('.remove-search-btn');
         const nftSearchInput = collectionSection.querySelector('#nft-search');
         const collectionSearchInput = collectionSection.querySelector('#collection-search');
@@ -433,7 +449,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
 
-
         if (collectionFilters) {
             const switch1 = document.getElementById('switch1');
             const switch2 = document.getElementById('switch2');
@@ -469,56 +484,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             }
         }
-
-        nftTimes.forEach(nftTime => {
-            const nftTimeText = nftTime.querySelector('span');
-            const dateString = nftTimeText.textContent.trim();
-            const datePattern = /(\w+)\.?\ (\d+), (\d+), (\d+):(\d+) (a\.m\.|p\.m\.)/;
-            const match = dateString.match(datePattern);
-
-            if (match) {
-                const monthMap = {
-                    'Jan': 0, 'Feb': 1, 'March': 2, 'April': 3, 'May': 4, 'June': 5,
-                    'July': 6, 'Aug': 7, 'Sept': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-                };
-
-                const month = monthMap[match[1]];
-                const day = parseInt(match[2], 10);
-                const year = parseInt(match[3], 10);
-                let hour = parseInt(match[4], 10);
-                const minute = parseInt(match[5], 10);
-                const period = match[6];
-
-                if (period === 'p.m.' && hour !== 12) {
-                    hour += 12;
-                } else if (period === 'a.m.' && hour === 12) {
-                    hour = 0;
-                }
-
-                const nftEndTime = new Date(Date.UTC(year, month, day, hour, minute));
-
-                if (!isNaN(nftEndTime)) {
-                    const today = new Date();
-                    const isToday = (
-                        year === today.getFullYear() &&
-                        month === today.getMonth() &&
-                        day === today.getDate()
-                    );
-
-                    if (nftEndTime < today) {
-                        nftTimeText.textContent = 'Expired';
-                        nftTime.classList.add('expired');
-                    }
-                    else if (isToday) {
-                        nftTimeText.textContent = nftEndTime.toLocaleTimeString();
-                    }
-                    else {
-                        nftTimeText.textContent = formatDateToISOString(nftEndTime);
-                    }
-                }
-            }
-        });
-
-
     }
 });

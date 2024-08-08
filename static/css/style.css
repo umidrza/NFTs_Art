@@ -1265,7 +1265,7 @@ tr.spacing td {
 
 .popular-collection-cards {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
     gap: var(--popular-collection-cards-gap);
 }
@@ -2216,7 +2216,7 @@ tr.spacing td {
     margin-left: 2px;
 }
 
-.nft-time.expired{
+.nft-time:has(.expired){
     background: #EB3F5E;
 }
 

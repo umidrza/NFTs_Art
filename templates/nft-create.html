@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create NFT 
+{% endblock title %}
+
+{% block main %}
+
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <h2 class="section-title">Create New Item</h2>
+            <form class="form" id="nft-create-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="form-error">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li class="form-warning">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <div class="form-preview">
+                    <h4 class="form-subtitle">Preview</h4>
+                    <div class="nft-form-image">
+                        <img id="uploaded-image" class="hidden" src="">
+                        <div id="no-new-image">
+                            <i class="fa-regular fa-image"></i>
+                            <p>Upload file to preview your brand <br> new NFT</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-inputs-container">
+                    <div class="form-inputs">
+                        
+                        <div class="form-control">
+                            <label for="blockchain" class="form-label">Blockchain</label>
+                            <select name="blockchain" id="blockchain" class="form-select">
+                            {% for blockchain in blockchains %}
+                                <option class="form-option" value="{{ blockchain.id }}">{{ blockchain.name }}</option>
+                            {% endfor %}
+                            </select>
+                            {% if form.blockchain.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.blockchain.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="image" class="form-label">Upload image</label>
+                            <div class="upload-image">
+                                <input name="image" type="file" id="upload-image-input" accept="image/*" class="hidden" />
+                                <button type="button" class="btn-outline-green"
+                                    onclick="document.getElementById('upload-image-input').click();">Upload Image</button>
+                                <p class="form-text-grey">PNG, GIF, WEBP, JPEG. Max 100mb.</p>
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.image.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="name" class="form-label">Name of NFTs</label>
+                            <input type="text" name="name" class="form-input" placeholder="Type here..." required>
+                            {% if form.name.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.name.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea name="description" class="form-textarea" placeholder="Type here..." required></textarea>
+                            {% if form.description.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.description.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="collection" class="form-label">Choose Collection </label>
+                            <div class="form-collections">
+                                <div class="add-collection">
+                                    <i class="fa-solid fa-plus"></i>
+                                </div>
+                                <div class="form-collection">
+                                    <img src="/static/img/image1.jpeg" alt="" class="form-collection-image">
+                                    <div class="form-collection-name">
+                                        <span>Human Leaf</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if form.collection.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.collection.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-checkboxes">
+                        <div class="form-checkbox">
+                            <div class="form-checkbox-label">
+                                <label for="marketplace" class="form-label">Put on marketplace</label>
+                                <p class="form-text-grey">
+                                    Put your new NFT on Rarible's marketplace
+                                </p>
+                            </div>
+                            <input type="checkbox" id="marketplace" class="form-checkbox-input hidden">
+                            <label class="checkbox-icon" for="marketplace"></label>
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="form-checkbox-label">
+                                <label for="unlock-purchased" class="form-label">Unlock once purchased</label>
+                                <p class="form-text-grey">
+                                    Content will be unlocked after successful transaction
+                                </p>
+                            </div>
+                            <input type="checkbox" id="unlock-purchased" class="form-checkbox-input hidden">
+                            <label class="checkbox-icon" for="unlock-purchased"></label>
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="form-checkbox-label">
+                                <label for="free-minting" class="form-label">Free minting</label>
+                                <p class="form-text-grey">
+                                    Buyer will pay gas fees for minting
+                                </p>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="free-minting" class="form-checkbox-input">
+                                <label class="checkbox-icon" for="free-minting"></label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="form-button btn-green">Create item</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock main %}
+

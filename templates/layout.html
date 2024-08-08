@@ -35,9 +35,9 @@
                     <div id="theme-toggle">
                         <i class="fa-solid fa-moon"></i>
                     </div>
-                    <a class="nav-button" href="nft-create.html"><button class="btn-green">Create</button></a>
-
+                    
                     {% if user.is_authenticated %}
+                        <a class="nav-button" href="{% url 'collection:nft_create' %}"><button class="btn-green">Create</button></a>
                         <div class="avatar nav-button">
                             <a href="{% url 'login' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
                             <div class="avatar-icons">
@@ -70,11 +70,11 @@
                                 </div>
                             </div>
                         </div>
+                        <a href="{% url 'collection:nft_create' %}"><button class="btn-green">Create</button></a>
                     {% else %}
                         <a href="{% url 'login' %}"><i class="fa-solid fa-user"></i></a>
                     {% endif %}
 
-                    <a href="nft-create.html"><button class="btn-green">Create</button></a>
                 </div>
                 <ul class="nav-menu-links">
                     <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>

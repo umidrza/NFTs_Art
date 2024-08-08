@@ -29,7 +29,7 @@
                         <p class="auction-action-text">Share</p>
                     </div>
                     <div class="auction-action">
-                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <i class="fa-solid fa-arrows-rotate" onclick="location.reload();"></i>
                         <p class="auction-action-text">Refresh</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                             </div>
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Auction ending in</p>
-                                <h4 class="auction-text-black">{{ nft.auctions.first.end_time }}</h4>
+                                <h4 class="auction-text-black countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></h4>
                                 <p class="auction-text-grey">Bids: {{ nft.auctions.first.bids.count}} </p>
                             </div>
                         </div>
@@ -79,6 +79,7 @@
                                     <p class="nft-auction-creator-name">{{ nft.creator.fullname }}</p>
                                 </div>
                             </div>
+                            {% if collection %}
                             <div class="nft-auction-card-section">
                                 <p class="auction-text-grey">Collection</p> 
                                 <div class="auction-nft-card">
@@ -94,10 +95,10 @@
                                     <p class="nft-auction-creator-name">{{ collection.creator.fullname }}</p>
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-                {% if nft.auctions.exists %}
                     <div class="auction-terms">
                         <div class="term-check-icon">
                             <i class="fa-solid fa-check check-icon hidden"></i>
@@ -105,9 +106,14 @@
                         <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                     </div>
                     <div class="auction-buttons">
+                        {% if nft.auctions.exists %}
                         <button class="auction-button btn-green" disabled>Purchase now</button>
                         <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                        {% elif request.user == nft.creator %}
+                        <a href="{% url 'collection:nft_sell' nft.id %}"><button class="auction-button btn-green" disabled>List item for Sale</button></a>
+                        {% endif %}
                     </div>
+                    {% if nft.auctions.exists %}
                     <div class="auction-charts">
                         <div class="auction-chart dropdown">
                             <div class="chart-title dropdown-btn">
@@ -201,7 +207,7 @@
                                             </td>
                                             <td class="usd"></td>
                                             <td>{{ auction.quantity }}</td>
-                                            <td>{{ auction.end_time }}</td>
+                                            <td class="countdown days" data-date="{{ auction.end_time|date:'c' }}"></td>
                                             <td>{{ auction.saler }}</td>
                                             <td>
                                                 <button class="btn-outline-green">Buy</button>
@@ -243,7 +249,7 @@
                                                 <td class="usd"></td>
                                                 <td>{{ bid.quantity }}</td>
                                                 <td>12% below</td>
-                                                <td>{{ bid.expiration }}</td>
+                                                <td class="countdown days" data-date="{{ bid.expiration|date:'c' }}"></td>
                                                 <td>{{ bid.bidder }}</td>
                                             </tr>
                                             <tr class="spacing">
@@ -256,86 +262,58 @@
                         </div>
                         {% endif %}
                     </div>
-                {% endif %}
+                    {% endif %}
             </div>
         </div>
     </div>
 </section>
 
+{% if collection %}
 <section class="popular-collections-section">
     <div class="container">
         <div class="popular-collections">
             <div class="popular-collections-header">
-                <h2 class="section-title">Get Popular Collection</h2>
-                <a href="#" class="see-all">See all</a>
+                <h2 class="section-title">More From This Collection</h2>
+                <a href="{% url 'collection:detail' collection.id %}" class="see-all">See all</a>
             </div>
             <div class="popular-collection-cards">
+            {% with displayed_nfts=0 %}
+            {% for collection_nft in collection.nfts.all %}
+            {% if displayed_nfts < 4 and nft != collection_nft %}
                 <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0121</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image4.jpeg" alt="" class="nft-image">
-                    </div>
+                    <a href="{% url 'collection:collection_nft_detail' collection.id collection_nft.id %}">
+                        <h4 class="nft-name">{{ collection_nft.name }}</h4>
+                    </a>
+                    <a href="{% url 'collection:collection_nft_detail' collection.id collection_nft.id %}">
+                        <div class="nft-card-image">
+                            <img src="{{ collection_nft.image.url }}" class="nft-image">
+                        </div>
+                    </a>
                     <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
+                        {% if collection_nft.auctions.exists %}
+                            <div class="nft-highest-bid">
+                                <p>Highest bid</p>
+                                <h4 class="nft-price">{{ collection_nft.auctions.first.price }} {{ collection_nft.auctions.first.currency.symbol }}</h4>
+                            </div>
+                            <div class="nft-time">
+                                <span class="countdown" data-date="{{ collection_nft.auctions.first.end_time|date:'c' }}"></span>
+                            </div>
+                        {% else %}
+                            <div class="not-on-sale">
+                                <h4>Not on sale</h4>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0122</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image2.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0123</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image1.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0124</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image3.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
+                {% with displayed_nfts=displayed_nfts|add:1 %}{% endwith %}
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
             </div>
-
         </div>
-
     </div>
 </section>
+{% endif %}
 
 {% endblock main %}
 
@@ -350,7 +328,7 @@
         var currentCount = parseInt(likeCountSpan.text(), 10);
 
         $.ajax({
-            url: '{% url "collection:like_nft" nft.id %}',
+            url: '{% url "collection:nft_like" nft.id %}',
             method: 'POST',
             data: {
                 'csrfmiddlewaretoken': '{{ csrf_token }}'

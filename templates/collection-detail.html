@@ -162,10 +162,10 @@
                             data-currency="{% if nft.auctions %}{{ nft.auctions.first.currency.symbol }}{% endif %}" 
                             data-price="{% if nft.auctions %}{{ nft.auctions.first.price }}{% endif %}">
 
-                            <a href="{% url 'collection:nft_detail' collection.id nft.id %}">
+                            <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
                                 <h4 class="nft-name">{{ nft.name }}</h4>
                             </a>
-                            <a href="{% url 'collection:nft_detail' collection.id nft.id %}">
+                            <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
                                 <div class="nft-card-image">
                                     <img src="{{ nft.image.url }}" class="nft-image">
                                 </div>
@@ -177,7 +177,7 @@
                                         <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
                                     </div>
                                     <div class="nft-time">
-                                        <span>{{ nft.auctions.first.end_time }}</span>
+                                        <span class="countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></span>
                                     </div>
                                 {% else %}
                                     <div class="not-on-sale">
