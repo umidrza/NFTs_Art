@@ -13,36 +13,45 @@
                 <div class="collection-creators">
                     <h2 class="collection-creators-title">The Best Collectors for <br>NFTs</h2>
                     <div class="collection-creator">
-                        <div class="avatar">
-                            <img class="avatar-img" src="{{ collection.creator.avatar.image.url }}">
-                            <div class="avatar-icons">
-                                <div class="verified-icon">
-                                    <i class="star-icon"></i>
-                                    <i class="fa-solid fa-check check-icon"></i>
+                        <a href="{% url 'collection:user_collections' creator.username %}">
+                            <div class="avatar">
+                                <img class="avatar-img" src="{{ creator.avatar.image.url }}">
+                                <div class="avatar-icons">
+                                    <div class="verified-icon">
+                                        <i class="star-icon"></i>
+                                        <i class="fa-solid fa-check check-icon"></i>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                         <div class="collection-creator-desc">
                             <div class="collection-creator-info">
-                                <h4 class="collection-creator-fullname">{{ collection.creator.fullname }}</h4>
-                                <p class="collection-creator-username">@{{ collection.creator.username }}</p>
+                                <a href="{% url 'collection:user_collections' creator.username %}">
+                                    <h4 class="collection-creator-fullname">{{ creator.fullname }}</h4>
+                                </a>
+                                <a href="{% url 'collection:user_collections' creator.username %}">
+                                    <p class="collection-creator-username">@{{ creator.username }}</p>
+                                </a>
                             </div>
                             <div class="collection-creator-detail">
                                 <div class="collection-creator-stats">
                                     <div class="collection-creator-stat">
                                         <p>Collections</p>
-                                        <h5>{{ collection.creator.collections.count }}</h5>
+                                        <h5>{{ creator.collections.count }}</h5>
                                     </div>
                                     <div class="collection-creator-stat">
                                         <p>Followers</p>
-                                        <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
+                                        <h5 class="creator-followers-count">{{ creator.followers.count }}</h5>
                                     </div>
                                 </div>
-                                {% if request.user == collection.creator %}
+                                {% if request.user == creator %}
+                                    <a href="{% url 'collection:user_nfts' creator.username %}">
+                                        <button class="btn-green collection-card-btn">My NFTs</button>
+                                    </a>
                                 {% elif following %}
-                                    <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
+                                    <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ creator.id }}">Following</button>
                                 {% else %}
-                                    <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
+                                    <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ creator.id }}">Follow</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -59,6 +68,11 @@
                                 <label class="collection-filter-item-text" for="status-auction" >On Auction</label>
                                 <input class="collection-filter-checkbox hidden" id="status-auction" type="checkbox" name="status" value="auction">
                                 <label class="filter-check-icon" for="status-auction"><i class="fa-solid fa-check check-icon"></i></label>
+                            </div>
+                            <div class="collection-filter-item">
+                                <label class="collection-filter-item-text" for="status-not-started">Not started</label>
+                                <input class="collection-filter-checkbox hidden" id="status-not-started" type="checkbox" name="status" value="not-started">
+                                <label class="filter-check-icon" for="status-not-started"><i class="fa-solid fa-check check-icon"></i></label>
                             </div>
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="status-expired" >Expired</label>
@@ -162,25 +176,49 @@
                             data-currency="{% if nft.auctions %}{{ nft.auctions.first.currency.symbol }}{% endif %}" 
                             data-price="{% if nft.auctions %}{{ nft.auctions.first.price }}{% endif %}">
 
-                            <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
-                                <h4 class="nft-name">{{ nft.name }}</h4>
-                            </a>
-                            <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
-                                <div class="nft-card-image">
-                                    <img src="{{ nft.image.url }}" class="nft-image">
-                                </div>
-                            </a>
+                            {% if collection %}
+                                <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
+                                    <h4 class="nft-name">{{ nft.name }}</h4>
+                                </a>
+                                <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
+                                    <div class="nft-card-image">
+                                        <img src="{{ nft.image.url }}" class="nft-image">
+                                    </div>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'collection:nft_detail' nft.id %}">
+                                    <h4 class="nft-name">{{ nft.name }}</h4>
+                                </a>
+                                <a href="{% url 'collection:nft_detail' nft.id %}">
+                                    <div class="nft-card-image">
+                                        <img src="{{ nft.image.url }}" class="nft-image">
+                                    </div>
+                                </a>
+                            {% endif %}
                             <div class="nft-detail">
-                                {% if nft.auctions.exists %}
-                                    <div class="nft-highest-bid">
+                                {% if nft.get_status == 'auction' %}
+                                    <div class="nft-status">
                                         <p>Highest bid</p>
                                         <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
                                     </div>
                                     <div class="nft-time">
                                         <span class="countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></span>
                                     </div>
+                                {% elif nft.get_status == 'expired' %}
+                                    <div class="nft-status">
+                                        <p>Highest bid</p>
+                                        <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
+                                    </div>
+                                    <div class="nft-time">
+                                        <span class="expired">Expired</span>
+                                    </div>
+                                {% elif nft.get_status == 'not-started' %}
+                                    <div class="nft-status nft-status-not-sale">
+                                        <h4>Not Started</h4>
+                                        <p>Starts at: {{ nft.auctions.first.start_time|date:"M d, Y" }}</p>
+                                    </div>
                                 {% else %}
-                                    <div class="not-on-sale">
+                                    <div class="nft-status nft-status-not-sale">
                                         <h4>Not on sale</h4>
                                     </div>
                                 {% endif %}

@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create Collection
+{% endblock title %}
+
+{% block main %}
+
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <h2 class="section-title">Create new collection</h2>
+            <form class="form" method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="form-error">
+                        <ul>
+                            {% for error in form.non_field_errors %}
+                                <li class="form-warning">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <div class="form-inputs-container">
+                    <div class="form-inputs">
+                        <div class="form-control">
+                            <label for="blockchain" class="form-label">Blockchain</label>
+                            <select name="blockchain" id="blockchain" class="form-select">
+                            {% for blockchain in blockchains %}
+                                <option class="form-option" value="{{ blockchain.id }}">{{ blockchain.name }}</option>
+                            {% endfor %}
+                            </select>
+                            {% if form.blockchain.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.blockchain.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="name" class="form-label">Name of Collection</label>
+                            <input type="text" name="name" class="form-input" placeholder="Type here..." required>
+                            {% if form.name.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.name.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-control">
+                            <label for="category" class="form-label">Category</label>
+                            <select name="category" id="category" class="form-select">
+                            {% for category in categories %}
+                                <option class="form-option" value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                            </select>
+                            {% if form.category.errors %}
+                                <div class="form-error">
+                                    <ul>
+                                        {% for error in form.category.errors %}
+                                            <li class="form-warning">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="form-button btn-green">Create Collection</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock main %}

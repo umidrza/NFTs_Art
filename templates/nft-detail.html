@@ -36,7 +36,7 @@
             </div>
             <div class="auction-desc">
                 <div class="auction-info">
-                    {% if nft.auctions.exists %}
+                    {% if status == 'auction' %}
                         <div class="auction-badge">
                             <i class="live-icon"></i>
                             <h4 class="auction-text-black">Live Now</h4>
@@ -49,18 +49,33 @@
                             {% endif %}
                             <h2 class="nft-auction-name">{{ nft.name }}</h2>
                         </div>
-                        {% if nft.auctions.exists %}
+                        {% if status != 'not-on-sale' %}
                         <div class="auction-details">
+                            {% if status == 'auction' or status == 'expired' %}
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Current bid</p>
-                                <h4 class="auction-text-black eth">{{ nft.auctions.first.price }}</h4>
+                                <h4 class="auction-text-black eth">{{ auction.price }}</h4>
                                 <p class="auction-text-grey usd"></p>
                             </div>
+                            {% endif %}
+                            {% if status == 'auction' %}
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Auction ending in</p>
-                                <h4 class="auction-text-black countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></h4>
-                                <p class="auction-text-grey">Bids: {{ nft.auctions.first.bids.count}} </p>
+                                <h4 class="auction-text-black countdown" data-date="{{ auction.end_time|date:'c' }}"></h4>
+                                <p class="auction-text-grey">Bids: {{ auction.bids.count}} </p>
                             </div>
+                            {% elif status == 'expired' %}
+                            <div class="auction-detail">
+                                <p class="auction-text-grey">Auction ended</p>
+                                <h4 class="auction-text-black">Expired</h4>
+                                <p class="auction-text-grey">Bids: {{ auction.bids.count}} </p>
+                            </div>
+                            {% elif status == 'not-started' %}
+                            <div class="auction-detail">
+                                <p class="auction-text-grey">Auction starting in</p>
+                                <h4 class="auction-text-black">{{ auction.start_time|date:"M d, Y" }}</h4>
+                            </div>
+                            {% endif %}
                         </div>
                         {% endif %}
                         <div class="nft-auction-creator">
@@ -79,12 +94,12 @@
                                     <p class="nft-auction-creator-name">{{ nft.creator.fullname }}</p>
                                 </div>
                             </div>
-                            {% if collection %}
+                            {% if status == 'auction' %}
                             <div class="nft-auction-card-section">
                                 <p class="auction-text-grey">Collection</p> 
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="{{ collection.creator.avatar.image.url }}"></a>
+                                        <a href="#"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -92,7 +107,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">{{ collection.creator.fullname }}</p>
+                                    <p class="nft-auction-creator-name">{{ auction.saler.username }}</p>
                                 </div>
                             </div>
                             {% endif %}
@@ -106,15 +121,15 @@
                         <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                     </div>
                     <div class="auction-buttons">
-                        {% if nft.auctions.exists %}
+                        {% if status == 'auction' %}
                         <button class="auction-button btn-green" disabled>Purchase now</button>
                         <button class="auction-button btn-outline-green" disabled>Place a bid</button>
                         {% elif request.user == nft.creator %}
                         <a href="{% url 'collection:nft_sell' nft.id %}"><button class="auction-button btn-green" disabled>List item for Sale</button></a>
                         {% endif %}
                     </div>
-                    {% if nft.auctions.exists %}
                     <div class="auction-charts">
+                        {% if status == 'auction' %}
                         <div class="auction-chart dropdown">
                             <div class="chart-title dropdown-btn">
                                 <h3>Price History</h3>
@@ -181,6 +196,8 @@
                             </div>
 
                         </div>
+                        {% endif %}
+                        {% if status == 'auction' or status == 'not-started' %}
                         <div class="auction-chart dropdown">
                             <div class="chart-title dropdown-btn">
                                 <h3>Listings</h3>
@@ -210,7 +227,7 @@
                                             <td class="countdown days" data-date="{{ auction.end_time|date:'c' }}"></td>
                                             <td>{{ auction.saler }}</td>
                                             <td>
-                                                <button class="btn-outline-green">Buy</button>
+                                                <a href="{% url 'collection:auction_detail' nft_id=nft.id auction_id=auction.id %}"><button class="btn-outline-green">Buy</button></a>
                                             </td>
                                         </tr>
                                         <tr class="spacing">
@@ -221,7 +238,7 @@
                                 </table>
                             </div>
                         </div>
-                        {% if nft.auctions.first.bids.exists %}
+                        {% if auction.bids.exists %}
                         <div class="auction-chart dropdown">
                             <div class="chart-title dropdown-btn">
                                 <h3>Offers</h3>
@@ -240,7 +257,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for bid in nft.auctions.first.bids.all %}
+                                        {% for bid in auction.bids.all %}
                                             <tr>
                                                 <td class="eth">
                                                     <i class="fa-brands fa-ethereum"></i>
@@ -261,14 +278,15 @@
                             </div>
                         </div>
                         {% endif %}
+                        {% endif %}
                     </div>
-                    {% endif %}
+                    
             </div>
         </div>
     </div>
 </section>
 
-{% if collection %}
+{% if collection_nfts %}
 <section class="popular-collections-section">
     <div class="container">
         <div class="popular-collections">
@@ -277,9 +295,7 @@
                 <a href="{% url 'collection:detail' collection.id %}" class="see-all">See all</a>
             </div>
             <div class="popular-collection-cards">
-            {% with displayed_nfts=0 %}
-            {% for collection_nft in collection.nfts.all %}
-            {% if displayed_nfts < 4 and nft != collection_nft %}
+            {% for collection_nft in collection_nfts %}
                 <div class="nft-card">
                     <a href="{% url 'collection:collection_nft_detail' collection.id collection_nft.id %}">
                         <h4 class="nft-name">{{ collection_nft.name }}</h4>
@@ -290,25 +306,35 @@
                         </div>
                     </a>
                     <div class="nft-detail">
-                        {% if collection_nft.auctions.exists %}
-                            <div class="nft-highest-bid">
+                        {% if collection_nft.get_status == 'auction' %}
+                            <div class="nft-status">
                                 <p>Highest bid</p>
                                 <h4 class="nft-price">{{ collection_nft.auctions.first.price }} {{ collection_nft.auctions.first.currency.symbol }}</h4>
                             </div>
                             <div class="nft-time">
                                 <span class="countdown" data-date="{{ collection_nft.auctions.first.end_time|date:'c' }}"></span>
                             </div>
+                        {% elif collection_nft.get_status == 'expired' %}
+                            <div class="nft-status">
+                                <p>Highest bid</p>
+                                <h4 class="nft-price">{{ collection_nft.auctions.first.price }} {{ collection_nft.auctions.first.currency.symbol }}</h4>
+                            </div>
+                            <div class="nft-time">
+                                <span class="expired">Expired</span>
+                            </div>
+                        {% elif collection_nft.get_status == 'not-started' %}
+                            <div class="nft-status nft-status-not-sale">
+                                <h4>Not Started</h4>
+                                <p>Starts at: {{ collection_nft.auctions.first.start_time|date:"M d, Y" }}</p>
+                            </div>
                         {% else %}
-                            <div class="not-on-sale">
+                            <div class="nft-status nft-status-not-sale">
                                 <h4>Not on sale</h4>
                             </div>
                         {% endif %}
                     </div>
                 </div>
-                {% with displayed_nfts=displayed_nfts|add:1 %}{% endwith %}
-            {% endif %}
             {% endfor %}
-            {% endwith %}
             </div>
         </div>
     </div>

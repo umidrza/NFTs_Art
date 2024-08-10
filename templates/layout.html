@@ -27,19 +27,19 @@
                 </a>
                 <ul class="nav-links">
                     <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>
-                    <li class="nav-item"><a href="roadmap.html" class="nav-link">Road Map</a></li>
-                    <li class="nav-item"><a href="ourclans.html" class="nav-link">Our Clans</a></li>
-                    <li class="nav-item"><a href="faq.html" class="nav-link">FAQ</a></li>
+                    <li class="nav-item"><a href="{% url 'home:roadmap' %}" class="nav-link">Road Map</a></li>
+                    <li class="nav-item"><a href="{% url 'home:ourclans' %}" class="nav-link">Our Clans</a></li>
+                    <li class="nav-item"><a href="{% url 'home:faq' %}" class="nav-link">FAQ</a></li>
                 </ul>
                 <div class="nav-buttons">
                     <div id="theme-toggle">
                         <i class="fa-solid fa-moon"></i>
                     </div>
                     
-                    {% if user.is_authenticated %}
+                    {% if request.user.is_authenticated %}
                         <a class="nav-button" href="{% url 'collection:nft_create' %}"><button class="btn-green">Create</button></a>
                         <div class="avatar nav-button">
-                            <a href="{% url 'login' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
+                            <a href="{% url 'collection:user_collections' request.user.username %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
                             <div class="avatar-icons">
                                 <div class="verified-icon">
                                     <i class="star-icon"></i>
@@ -60,9 +60,9 @@
             <div class="nav-menu" id="nav-menu">
                 <div class="nav-menu-buttons">
                     
-                    {% if user.is_authenticated %}
+                    {% if request.user.is_authenticated %}
                         <div class="avatar nav-button">
-                            <a href="{% url 'login' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
+                            <a href="{% url 'collection:user_collections' request.user.username %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
                             <div class="avatar-icons">
                                 <div class="verified-icon">
                                     <i class="star-icon"></i>
@@ -78,9 +78,9 @@
                 </div>
                 <ul class="nav-menu-links">
                     <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>
-                    <li class="nav-item"><a href="roadmap.html" class="nav-link">Road Map</a></li>
-                    <li class="nav-item"><a href="ourclans.html" class="nav-link">Our Clans</a></li>
-                    <li class="nav-item"><a href="faq.html" class="nav-link">FAQ</a></li>
+                    <li class="nav-item"><a href="{% url 'home:roadmap' %}" class="nav-link">Road Map</a></li>
+                    <li class="nav-item"><a href="{% url 'home:ourclans' %}" class="nav-link">Our Clans</a></li>
+                    <li class="nav-item"><a href="{% url 'home:faq' %}" class="nav-link">FAQ</a></li>
                 </ul>
             </div>
         </div>
@@ -101,9 +101,9 @@
                 <div class="footer-links">
                     <ul class="footer-menu">
                         <li><a href="{% url 'collection:list' %}" class="footer-link">Collection</a></li>
-                        <li><a href="roadmap.html" class="footer-link">Road Map</a></li>
-                        <li><a href="ourclans.html" class="footer-link">Our Clans</a></li>
-                        <li><a href="faq.html" class="footer-link">FAQ</a></li>
+                        <li><a href="{% url 'home:roadmap' %}" class="footer-link">Road Map</a></li>
+                        <li><a href="{% url 'home:ourclans' %}" class="footer-link">Our Clans</a></li>
+                        <li><a href="{% url 'home:faq' %}" class="footer-link">FAQ</a></li>
                     </ul>
                     <ul class="footer-social">
                         <li><a href="#"><i class="fa-brands fa-discord"></i></a></li>

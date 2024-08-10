@@ -4,80 +4,126 @@ from users.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from users.models import Follow
-from .forms import NFTForm, AuctionForm
+from .forms import *
 
 
-def collections_list(request):
-    collections = Collection.objects.all()
+def collections_list(request, username=None):
+    if username:
+        user = get_object_or_404(User, username=username)
+        collections = Collection.objects.filter(creator=user)
+        title = 'My Collections' if user == request.user else f"{user.fullname}'s Collections"
+    else:
+        collections = Collection.objects.all()
+        title = 'Get Popular Collection'
+    
     categories = Category.objects.all()
     blockchains = Blockchain.objects.all()
-    following = User.objects.filter(followers__follower=request.user)
+    following = User.objects.filter(followers__follower=request.user) if request.user.is_authenticated else User.objects.none()
 
     context = {
         'collections': collections,
         'categories': categories,
         'blockchains': blockchains,
         'following': following,
+        'title': title,
     }
 
     return render(request, 'collections.html', context)
 
+
 def collection_detail(request, id): 
     collection = get_object_or_404(Collection, id=id)
+    creator = collection.creator
     currencies = Currency.objects.all()
-    following = Follow.objects.filter(follower=request.user, following=collection.creator).exists()
+    following = Follow.objects.filter(follower=request.user, following=creator).exists() if request.user.is_authenticated else False
     nfts = collection.nfts.prefetch_related('auctions').all()
     
     context = {
         'collection': collection,
         'nfts': nfts,
+        'creator': creator,
         'currencies': currencies,
         'following': following,
     }
     return render(request, 'collection-detail.html', context)
 
 
-def collection_nft_detail(request, collection_id, nft_id):
-    collection = get_object_or_404(Collection, id=collection_id)
-    nft = get_object_or_404(NFT, id=nft_id)
-    liked = Like.objects.filter(nft=nft, user=request.user).exists()
+@login_required
+def collection_create(request):
+    blockchains = Blockchain.objects.all()
+    categories = Category.objects.all()
+    if request.method == 'POST':
+        form = CollectionForm(request.POST)
+        if form.is_valid():
+            collection = form.save(commit=False)
+            collection.creator = request.user
+            collection.save()
+            return redirect('collection:my_collections')
+    else:
+        form = CollectionForm()
 
     context = {
-        'collection': collection,
-        'nft': nft,
-        'liked': liked,
+        'form': form,
+        'blockchains': blockchains,
+        'categories': categories,
     }
-    return render(request, 'nft-detail.html', context)
+    
+    return render(request, 'collection-create.html', context)
 
 
-def nft_detail(request, nft_id):
+def nft_detail(request, nft_id, collection_id=None, auction_id = None):
     nft = get_object_or_404(NFT, id=nft_id)
-    liked = Like.objects.filter(nft=nft, user=request.user).exists()
-    collection = nft.collections.first
+    collection = get_object_or_404(Collection, id=collection_id) if collection_id else nft.collections.first()
+    collection_nfts = collection.nfts.exclude(id=nft.id)[:4] if collection else None
+    auction = get_object_or_404(Auction, id=auction_id) if auction_id else nft.auctions.first()
+    liked = Like.objects.filter(nft=nft, user=request.user).exists() if request.user.is_authenticated else False
+    status = nft.get_status(auction)
 
     context = {
         'nft': nft,
-        'liked': liked,
         'collection': collection,
+        'collection_nfts': collection_nfts,
+        'auction': auction,
+        'status': status,
+        'liked': liked,
     }
     return render(request, 'nft-detail.html', context)
 
 
 @login_required
+def user_nfts(request, username):
+    creator = get_object_or_404(User, username=username)
+    nfts = NFT.objects.filter(creator=creator)
+    currencies = Currency.objects.all()
+
+    context = {
+        'nfts': nfts,
+        'creator': creator,
+        'currencies': currencies,
+    }
+
+    return render(request, 'collection-detail.html', context)
+
+
+@login_required
 def nft_create(request):
+    collections = Collection.objects.filter(creator=request.user)
+    blockchains = Blockchain.objects.all()
     if request.method == 'POST':
-        form = NFTForm(request.POST, request.FILES)
+        form = NFTForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             nft = form.save(commit=False)
             nft.creator = request.user
             nft.save()
+            form.save_m2m()
             return redirect('collection:nft_detail', nft_id=nft.id)
     else:
-        form = NFTForm()
+        form = NFTForm(user=request.user)
 
     context = {
         'form': form,
-        'blockchains': Blockchain.objects.all(),
+        'blockchains': blockchains,
+        'collections': collections,
     }
     
     return render(request, 'nft-create.html', context)

@@ -1,155 +1,79 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Collections
+    Newsletter | FAQ
 {% endblock title %}
 
 {% block main %}
 
-<section class="collection-section">
+<section class="newsletter-section">
     <div class="container">
-        <div class="nft-collections">
-            <div class="nft-collections-title">
-                <h2 class="section-title">{{ title }}</h2>
-            </div>
-            <div class="nft-collections-container">
-                <div class="collection-search">
-                    <div class="collection-search-input">
-                        <input type="text" class="search-input" placeholder="Search collections" id="collection-search">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <i class="fa-solid fa-xmark remove-search-btn hidden"></i>
-                    </div>
-                    <div class="collection-select-filter">
-                        <select name="blockchains" id="blockchains" class="filter-select">
-                            <option value="all">All blockchains</option>
-                            {% for blockchain in blockchains %}
-                                <option value="{{ blockchain.id }}">{{ blockchain.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <select id="sort-by-collection" class="filter-select">
-                            <option value="default">Sort By</option>
-                            <option value="name-asc">Name: A to Z</option>
-                            <option value="name-desc">Name: Z to A</option>
-                        </select>
-                    </div>
-                    <div class="collection-grid-switches">
-                        <div class="grid-switch">
-                            <input type="radio" name="switch" id="switch2" class="hidden" checked>
-                            <label for="switch2">
-                                <div class="switch2-icon"></div>
-                                <div class="switch2-icon"></div>
-                                <div class="switch2-icon"></div>
-                                <div class="switch2-icon"></div>
-                            </label>
-                        </div>
-                        <div class="grid-switch">
-                            <input type="radio" name="switch" id="switch3" class="hidden">
-                            <label for="switch3">
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                                <div class="switch3-icon"></div>
-                            </label>
-                        </div>
-                    </div>
+        <div class="newsletter-faq">
+            <div class="newsletter">
+                <div class="newsletter-info">
+                    <h2 class="section-title">
+                        Get the Latest Super <br> Rare Update
+                    </h2>
+                    <p class="section-desc">
+                        Sign up to our regular newsletter for news right. <br>
+                        New product release and more
+                    </p>
                 </div>
-                <div class="collection-cards-filters">
-                    <div class="collection-filters">
-                        {% if categories %}
-                        <div class="collection-filter">
-                            <div class="collection-filter-title">
-                                <h3>Categories</h3>
-                            </div>
-                            <div class="collection-filter-items">
-                                {% for category in categories %}
-                                    <div class="collection-filter-item">
-                                        <label class="collection-filter-item-text" for="category-{{ category.id }}">{{ category.name }}</label>
-                                        <input class="collection-filter-checkbox hidden" id="category-{{ category.id }}" type="checkbox" name="category" value="{{ category.id }}">
-                                        <label class="filter-check-icon" for="category-{{ category.id }}">
-                                            <i class="fa-solid fa-check check-icon"></i>
-                                        </label>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
+                <form action="" class="get-in-touch-form">
+                    <div class="get-in-touch-input-box">
+                        <i class="fa-regular fa-envelope sms-icon"></i>
+                        <input type="email" class="get-in-touch-input" placeholder="Email address">
                     </div>
-                    {% if collections %}
-                    <div class="collection-cards-pagination">
-                        <div class="collection-cards">
-                            {% for collection in collections %}
-                                <div class="collection-card" data-category="{{ collection.category.id }}" data-blockchain="{{ collection.blockchain.id }}">
-                                    <div class="collection-card-desc">
-                                        <div class="collection-card-title">
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-name">
-                                                {{ collection.name }}
-                                            </a>
-                                            <p class="collection-card-creator">@{{ collection.creator.username }}</p>
-                                        </div>
-                                        <div class="collection-card-detail">
-                                            <div class="collection-creator-stats">
-                                                <div class="collection-creator-stat">
-                                                    <p>Collections</p>
-                                                    <h5>{{ collection.creator.collections.count }}</h5>
-                                                </div>
-                                                <div class="collection-creator-stat">
-                                                    <p>Followers</p>
-                                                    <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
-                                                </div>
-                                            </div>
-                                            {% if request.user == collection.creator %}
-                                            {% elif collection.creator in following %}
-                                                <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
-                                            {% else %}
-                                                <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="collection-card-images">
-                                        {% for nft in collection.nfts.all %}
-                                            {% if forloop.counter <= 3 %}
-                                                <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                    <img src="{{ nft.image.url }}">
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if collection.nfts.count > 3 %}
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                <img src="{{ collection.nfts.all.3.image.url }}">
-                                                {% if collection.nfts.count > 4 %}
-                                                    <p class="collection-more-image">+{{ collection.nfts.count|add:'-4' }}</p>
-                                                {% endif %}
-                                            </a>
-                                        {% endif %}
-                                    </div> 
-                                </div>
-                            {% endfor %}
+                    <button type="submit" class="get-in-touch-button btn-green">Get In Touch</button>
+                </form>
+            </div>
+            <div class="faq-container">
+                <h2 class="faq-title">
+                    Maybe your question is have been
+                    answered, check this out!
+                </h2>
+                <div class="faq-list">
+                    <div class="faq dropdown">
+                        <div class="faq-question dropdown-btn">
+                            <h4>When does minting begin?</h4>
+                            <i class="fa-solid fa-arrow-down arrow-icon"></i>
                         </div>
-                        <div class="collection-pagination">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </div>
-                            <div class="pagination">
-                                <a href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                            </div>
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </div>
-                        </div>
+                        <p class="faq-answer section-desc dropdown-content opened">
+                            Initial distribution will begin on February 1st 2022 at 3:00 PM
+                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
+                            reveal will happen by this point in time. The initial distribution will be tiered to
+                            the benefit of those who have traded or voted on dYdX.
+                        </p>
                     </div>
-                    {% endif %}
+                    <div class="faq dropdown">
+                        <div class="faq-question dropdown-btn">
+                            <h4>Who can mint one?</h4>
+                            <i class="fa-solid fa-arrow-down arrow-icon"></i>
+                        </div>
+                        <p class="faq-answer section-desc dropdown-content">
+                            Initial distribution will begin on February 1st 2022 at 3:00 PM
+                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
+                            reveal will happen by this point in time. The initial distribution will be tiered to
+                            the benefit of those who have traded or voted on dYdX.
+                        </p>
+                    </div>
+                    <div class="faq dropdown">
+                        <div class="faq-question dropdown-btn">
+                            <h4>Why should I hold one?</h4>
+                            <i class="fa-solid fa-arrow-down arrow-icon"></i>
+                        </div>
+                        <p class="faq-answer section-desc dropdown-content">
+                            Initial distribution will begin on February 1st 2022 at 3:00 PM
+                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
+                            reveal will happen by this point in time. The initial distribution will be tiered to
+                            the benefit of those who have traded or voted on dYdX.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</section>  
+</section>
 
 <section class="top-collectors-section">
     <h2 class="section-title">Our Top Collectors</h2>
@@ -389,34 +313,3 @@
 
 {% endblock main %}
 
-{% block scripts %}
-
-<script>
-    $(document).ready(function(){
-        $('.follow-btn').click(function(){
-            const userId = $(this).data('user-id');
-            const button = $(this);
-            const followersCountElement = button.closest('.collection-card-detail').find('.creator-followers-count');
-            let followersCount = parseInt(followersCountElement.text());
-            let url = '{% url "user:follow" 0 %}';
-            url = url.replace('0', userId);
-
-            $.ajax({
-                url: url,
-                method: 'POST',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                success: function(data) {
-                    if (data.status == 'followed') {
-                        button.removeClass('btn-green').addClass('btn-outline-green').text('Following');
-                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount + 1);
-                    } else if (data.status == 'unfollowed') {
-                        button.removeClass('btn-outline-green').addClass('btn-green').text('Follow');
-                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount - 1);
-                    }
-                },
-            });
-        });
-    });
-</script>
-
-{% endblock scripts %}

@@ -115,11 +115,12 @@
     </div>
 </section>
 
+{% if auction %}
 <section class="auction-section">
     <div class="container">
         <div class="auction">
             <div class="auction-image">
-                <a href="nft-detail.html"><img src="/static/img/image1-1.jpeg" alt=""></a>
+                <a href="{% url 'collection:auction_detail' auction.nft.id auction.id %}"><img src="{{ auction.nft.image.url }}"></a>
             </div>
             <div class="auction-desc">
                 <div class="auction-info">
@@ -129,19 +130,19 @@
                     </div>
                     <div class="auction-nft-desc">
                         <div class="nft-auction-detail">
-                            <p class="nft-auction-category">Human Life</p>
-                            <h2 class="nft-auction-name">Human Leaf Cowboy #0123</h2>
+                            <p class="nft-auction-category">{{ auction.nft.collections.first.name }}</p>
+                            <h2 class="nft-auction-name">{{ auction.nft.name }}</h2>
                         </div>
                         <div class="auction-details">
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Current bid</p>
-                                <h4 class="auction-text-black eth">300 ETH</h4>
+                                <h4 class="auction-text-black eth">{{ auction.price }}</h4>
                                 <p class="auction-text-grey usd"></p>
                             </div>
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Auction ending in</p>
-                                <h4 class="auction-text-black">03d : 25h : 05m</h4>
-                                <p class="auction-text-grey">Bids: 25</p>
+                                <h4 class="auction-text-black countdown" data-date="{{ auction.end_time|date:'c' }}"></h4>
+                                <p class="auction-text-grey">Bids: {{ auction.bids.count }}</p>
                             </div>
                         </div>
                         <div class="nft-auction-creator">
@@ -149,8 +150,7 @@
                                 <p class="auction-text-grey">Creator</p>
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg"
-                                                alt=""></a>
+                                        <a href="#"><img class="avatar-img" src="{{ auction.nft.creator.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -158,15 +158,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">Brandon Ekstrom</p>
+                                    <p class="nft-auction-creator-name">{{ auction.nft.creator.username }}</p>
                                 </div>
                             </div>
                             <div class="nft-auction-card-section">
                                 <p class="auction-text-grey">Collection</p>
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg"
-                                                alt=""></a>
+                                        <a href="#"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -174,7 +173,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">Cooper Bator</p>
+                                    <p class="nft-auction-creator-name">{{ auction.saler.username }}</p>
                                 </div>
                             </div>
                         </div>
@@ -194,79 +193,58 @@
         </div>
     </div>
 </section>
+{% endif %}
 
 <section class="popular-collections-section">
     <div class="container">
         <div class="popular-collections">
             <div class="popular-collections-header">
                 <h2 class="section-title">Get Popular Collection</h2>
-                <a href="#" class="see-all">See all</a>
+                <a href="{% url 'collection:list' %}" class="see-all">See all</a>
             </div>
             <div class="popular-collection-cards">
+            {% for nft in top_nfts %}
                 <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0121</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image4.jpeg" alt="" class="nft-image">
-                    </div>
+                    <a href="{% url 'collection:detail' nft.collections.first.id %}">
+                        <h4 class="nft-name">{{ nft.name }}</h4>
+                    </a>
+                    <a href="{% url 'collection:detail' nft.collections.first.id %}">
+                        <div class="nft-card-image">
+                            <img src="{{ nft.image.url }}" class="nft-image">
+                        </div>
+                    </a>
                     <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
+                        {% if nft.get_status == 'auction' %}
+                            <div class="nft-status">
+                                <p>Highest bid</p>
+                                <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
+                            </div>
+                            <div class="nft-time">
+                                <span class="countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></span>
+                            </div>
+                        {% elif nft.get_status == 'expired' %}
+                            <div class="nft-status">
+                                <p>Highest bid</p>
+                                <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
+                            </div>
+                            <div class="nft-time">
+                                <span class="expired">Expired</span>
+                            </div>
+                        {% elif nft.get_status == 'not-started' %}
+                            <div class="nft-status nft-status-not-sale">
+                                <h4>Not Started</h4>
+                                <p>Starts at: {{ nft.auctions.first.start_time|date:"M d, Y" }}</p>
+                            </div>
+                        {% else %}
+                            <div class="nft-status nft-status-not-sale">
+                                <h4>Not on sale</h4>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0122</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image2.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0123</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image1.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="nft-card">
-                    <h4 class="nft-name">Human Leaf #0124</h4>
-                    <div class="nft-card-image">
-                        <img src="/static/img/image3.jpeg" alt="" class="nft-image">
-                    </div>
-                    <div class="nft-detail">
-                        <div class="nft-highest-bid">
-                            <p>Highest bid</p>
-                            <h4>0.56 ETH</h4>
-                        </div>
-                        <div class="nft-time">
-                            <span>04:45:32</span>
-                        </div>
-                    </div>
-                </div>
+            {% endfor %}
             </div>
-
         </div>
-
     </div>
 </section>
 
@@ -577,7 +555,7 @@
 
 <section class="join-section">
     <div class="join-info">
-        <h2 class="section-title">Let’s Join The Team</h2>
+        <h2 class="section-title">Let's Join The Team</h2>
         <p class="section-desc">Let us guide you!</p>
     </div>
     <div class="join-buttons">

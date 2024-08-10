@@ -20,21 +20,35 @@ class Currency(models.Model):
 
     def __str__(self):
         return self.name
-
-class NFT(models.Model):
-    name = models.CharField(max_length=20)
-    description = models.TextField()
-    image = models.ImageField(upload_to='nfts/')
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    
+class Collection(models.Model):
+    name = models.CharField(max_length=30)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='collections', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
+
+
+class NFT(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    image = models.ImageField(upload_to='nfts/')
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
+    collections = models.ManyToManyField(Collection, related_name='nfts', blank=True)
+
+    def __str__(self):
+        return self.name
     
-    def get_status(self):
+    def get_status(self, auction=None):
         if self.auctions.exists():
-            latest_auction = self.auctions.order_by('-end_time').first()
-            if latest_auction.end_time > timezone.now():
+            if not auction:
+                auction = self.auctions.order_by('start_time').first()
+            if auction.start_time > timezone.now():
+                return 'not-started'
+            elif auction.end_time > timezone.now():
                 return 'auction'
             else:
                 return 'expired'
@@ -76,13 +90,3 @@ class Like(models.Model):
     def __str__(self):
         return f"{self.user} likes {self.nft.name}"
     
-
-class Collection(models.Model):
-    name = models.CharField(max_length=20)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='collections', on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    nfts = models.ManyToManyField(NFT, related_name='collections', blank=True)
-    blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name

@@ -103,24 +103,29 @@
                         </div>
                         
                         <div class="form-control">
-                            <label for="collection" class="form-label">Choose Collection </label>
+                            <label for="collection" class="form-label">Choose Collection</label>
                             <div class="form-collections">
-                                <div class="add-collection">
-                                    <i class="fa-solid fa-plus"></i>
-                                </div>
-                                <div class="form-collection">
-                                    <img src="/static/img/image1.jpeg" alt="" class="form-collection-image">
-                                    <div class="form-collection-name">
-                                        <span>Human Leaf</span>
+                                <a href="{% url 'collection:create' %}">
+                                    <div class="add-collection">
+                                        <i class="fa-solid fa-plus"></i>
                                     </div>
+                                </a>
+                            {% for collection in collections %}
+                                <div class="form-collection">
+                                    <input type="checkbox" name="collections" id="collection-{{ collection.id }}" value="{{ collection.id }}" class="hidden">
+                                    <label for="collection-{{ collection.id }}"><img src="{{ collection.nfts.first.image.url }}" alt="" class="form-collection-image"></label>
+                                    <label for="collection-{{ collection.id }}" class="form-collection-name">
+                                        <span>{{ collection.name }}</span>
+                                    </label>
                                 </div>
+                            {% endfor %}
                             </div>
-                            {% if form.collection.errors %}
+                            {% if form.collections.errors %}
                                 <div class="form-error">
                                     <ul>
-                                        {% for error in form.collection.errors %}
-                                            <li class="form-warning">{{ error }}</li>
-                                        {% endfor %}
+                                    {% for error in form.collections.errors %}
+                                        <li class="form-warning">{{ error }}</li>
+                                    {% endfor %}
                                     </ul>
                                 </div>
                             {% endif %}
