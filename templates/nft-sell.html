@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    List for Sale
+    {% if update %}
+        Update Auction
+    {% else %}
+        List for Sale
+    {% endif %}
 {% endblock title %}
 
 {% block main %}
@@ -9,7 +13,13 @@
 <section class="form-section">
     <div class="container">
         <div class="form-container">
-            <h2 class="section-title">List Item for Sale</h2>
+            <h2 class="section-title">
+                {% if update %}
+                    Update Auction
+                {% else %}
+                    List Item for Sale
+                {% endif %}
+            </h2>
             <form class="form" id="nft-sell-form" method="post">
                 {% csrf_token %}
                 <div class="form-preview">
@@ -20,7 +30,7 @@
                     </div>
                     <div class="nft-sell-price">
                         <p>Price</p>
-                        <h4 id="price-display">0 ETH</h4>
+                        <h4 id="price-display">0</h4>
                     </div>
                 </div>
                 <div class="form-inputs-container">
@@ -30,14 +40,17 @@
                             <div class="nft-sell-price-inputs">
                                 <select id="currency" name="currency" class="form-select">
                                 {% for currency in currencies %}
-                                    <option class="form-option" value="{{ currency.id }}">{{ currency.symbol }}</option>
+                                    <option class="form-option" value="{{ currency.id }}"
+                                        {% if auction and auction.currency.id == currency.id %}selected{% endif %}>
+                                        {{ currency.symbol }}
+                                    </option>
                                 {% endfor %}
                                 </select>
                                 {% if form.currency.errors %}
                                     <div class="form-warning">{{ form.currency.errors }}</div>
                                 {% endif %}
-                                <input type="number" id="price-input" name="price" class="form-input"
-                                    placeholder="Type here..." step="0.01">
+                                <input type="number" id="price-input" name="price" class="form-input" placeholder="Type here..." step="0.01"
+                                    {% if auction %}value="{{ auction.price }}"{% endif %}>
                                 {% if form.price.errors %}
                                     <div class="form-warning">{{ form.price.errors }}</div>
                                 {% endif %}
@@ -46,7 +59,8 @@
                         <div class="form-control">
                             {% if request.user != nft.creator %}
                                 <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" id="quantity-input" name="quantity" class="form-input" placeholder="Type here...">
+                                <input type="number" id="quantity-input" name="quantity" class="form-input" placeholder="Type here..."
+                                    {% if auction %}value="{{ auction.quantity }}"{% endif %}>
                                 {% if form.quantity.errors %}
                                     <div class="form-warning">{{ form.quantity.errors }}</div>
                                 {% endif %}
@@ -70,14 +84,16 @@
                         <div class="form-control-dates">
                             <div class="form-control">
                                 <label for="start-time" class="form-label">Starting</label>
-                                <input type="date" name="start_time" id="start-time" class="form-input" required>
+                                <input type="date" name="start_time" id="start-time" class="form-input"
+                                    {% if auction %}value="{{ auction.start_time|date:'Y-m-d' }}"{% endif %} required>
                                 {% if form.start_time.errors %}
                                     <div class="form-warning">{{ form.start_time.errors }}</div>
                                 {% endif %}
                             </div>
                             <div class="form-control">
                                 <label for="end-time" class="form-label">Ending</label>
-                                <input type="date" name="end_time" id="end-time" class="form-input" required>
+                                <input type="date" name="end_time" id="end-time" class="form-input"
+                                    {% if auction %}value="{{ auction.end_time|date:'Y-m-d' }}"{% endif %} required>
                                 {% if form.end_time.errors %}
                                     <div class="form-warning">{{ form.end_time.errors }}</div>
                                 {% endif %}
@@ -101,7 +117,13 @@
                         </div>
                     </div>
                     <div class="form-buttons">
-                        <button type="submit" class="form-button btn-green" id="complete-listing-btn">Complete Listing</button>
+                        <button type="submit" class="form-button btn-green" id="complete-listing-btn">
+                            {% if update %}
+                                Update Auction
+                            {% else %}
+                                Complete Listing
+                            {% endif %}
+                        </button>
                     </div>
                 </div>
             </form>
@@ -109,7 +131,8 @@
     </div>
 </section>
 
-<section class="popup-section" id="listing-popup">
+{% if auction and not update %}
+<section class="popup-section active" id="listing-popup" >
     <div class="popup">
         <div class="popup-header">
             <h3 class="popup-title">Complete Your Listing</h3>
@@ -117,53 +140,57 @@
         </div>
         <div class="popup-card">
             <div class="popup-card-image">
-                <img src="/static/img/image4.jpeg" alt="" class="nft-image">
+                <img src="{{ nft.image.url }}" class="nft-image">
             </div>
             <div class="popup-card-desc">
-                <h4 class="nft-name">Human Leaf #0121</h4>
+                <h4 class="nft-name">{{ nft.name }}</h4>
                 <div class="nft-detail">
                     <div class="nft-highest-bid">
                         <p>Highest bid</p>
-                        <h4 id="popup-price"></h4>
+                        <h4 id="popup-price">{{ auction.price}}</h4>
                     </div>
                     <div class="nft-time">
-                        <span id="popup-end-time"></span>
+                        <span id="popup-end-time" class="countdown" data-date="{{ auction.end_time|date:'c' }}"></span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="popup-buttons">
-            <button class="btn-green" id="sign-btn">Sign</button>
+            <a href="{% url 'wallet:connect' %}?next={{ request.path }}">
+                <button class="btn-green" id="sign-btn">Sign</button>
+            </a>
         </div>
     </div>
 </section>
+{% endif %}
 
-<section class="popup-section" id="completed-popup">
+{% if wallet and auction %}
+<section class="popup-section active" id="completed-popup">
     <div class="popup">
         <div class="popup-header">
             <h3 class="popup-title">Your NFT is Listed!</h3>
-            <p class="popup-desc">Awesome! You've listed <span>Human Leaf #0121</span></p>
+            <p class="popup-desc">Awesome! You've listed <span>{{ nft.name }}</span></p>
         </div>
         <div class="popup-card">
             <div class="popup-card-image">
-                <img src="/static/img/image4.jpeg" alt="" class="nft-image">
+                <img src="{{ nft.image.url }}" class="nft-image">
             </div>
             <div class="popup-card-desc">
-                <h4 class="nft-name">Human Leaf #0121</h4>
+                <h4 class="nft-name">{{ nft.name }}</h4>
                 <div class="nft-detail">
                     <div class="nft-highest-bid">
                         <p>Highest bid</p>
-                        <h4 id="popup-price">0.56 ETH</h4>
+                        <h4 id="popup-price">{{ auction.price}} {{ auction.currency.symbol }}</h4>
                     </div>
                     <div class="nft-time">
-                        <span id="popup-end-time">04:45:32</span>
+                        <span id="popup-end-time" class="countdown" data-date="{{ auction.end_time|date:'c'}}"></span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="popup-share">
             <div class="popup-nft-link">
-                <p class="popup-wallet-link">0x38682823...4T93</p>
+                <p class="popup-wallet-link">{{ wallet.key }}</p>
                 <i class="fa-solid fa-copy"></i>
             </div>
             <div class="popup-share-via">
@@ -177,11 +204,12 @@
                 <i class="fa-brands fa-facebook"></i>
             </div>
         </div>
-        <div class="popup-close-btn">
+        <a href="{% url 'collection:auction_detail' nft.id auction.id %}" class="popup-close-btn">
             <i class="fa-solid fa-xmark"></i>
-        </div>
+        </a>
     </div>
 </section>
+{% endif %}
 
 {% endblock main %}
 

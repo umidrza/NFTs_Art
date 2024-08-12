@@ -18,7 +18,12 @@ def login_register_view(request):
                 new_user = authenticate(username=user.username, password=request.POST['password1'])
                 if new_user is not None:
                     login(request, new_user)
-                    return redirect('home')
+
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
+                    else:
+                        return redirect('home')
                 
         elif 'login' in request.POST:
             login_form = LoginForm(request.POST)
@@ -29,7 +34,11 @@ def login_register_view(request):
                 user = authenticate(username=username, password=password)
                 if user is not None:
                     login(request, user)
-                    return redirect('home') 
+                    next_url = request.GET.get('next')
+                    if next_url:
+                        return redirect(next_url)
+                    else:
+                        return redirect('home') 
                 else:
                     login_form.add_error(None, 'Invalid username or password')
 

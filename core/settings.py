@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'home',
     'users',
     'collection',
+    'wallet',
 ]
 
 MIDDLEWARE = [

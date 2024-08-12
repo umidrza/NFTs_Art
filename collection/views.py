@@ -4,7 +4,10 @@ from users.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from users.models import Follow
+from wallet.models import Wallet
 from .forms import *
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 def collections_list(request, username=None):
@@ -49,26 +52,42 @@ def collection_detail(request, id):
 
 
 @login_required
-def collection_create(request):
+def collection_create_update(request, collection_id=None):
     blockchains = Blockchain.objects.all()
     categories = Category.objects.all()
+    collection = get_object_or_404(Collection, id=collection_id, creator=request.user) if collection_id else None
+    
     if request.method == 'POST':
-        form = CollectionForm(request.POST)
+        form = CollectionForm(request.POST, instance=collection)
         if form.is_valid():
             collection = form.save(commit=False)
             collection.creator = request.user
             collection.save()
-            return redirect('collection:my_collections')
+
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
+            
+            return redirect('collection:user_collections', request.user.username)
     else:
-        form = CollectionForm()
+        form = CollectionForm(instance=collection)
 
     context = {
         'form': form,
         'blockchains': blockchains,
         'categories': categories,
+        'is_update': collection_id is not None,
+        'collection': collection,
     }
-    
+
     return render(request, 'collection-create.html', context)
+
+
+@login_required
+def collection_delete(request, collection_id):
+    collection = get_object_or_404(Collection, id=collection_id)
+    collection.delete()
+    return redirect('collection:user_collections', request.user.username)
 
 
 def nft_detail(request, nft_id, collection_id=None, auction_id = None):
@@ -130,28 +149,67 @@ def nft_create(request):
 
 
 @login_required
-def nft_sell(request, nft_id):
-    nft = get_object_or_404(NFT, id=nft_id)
+def nft_sell(request, nft_id, auction_id=None):
     currencies = Currency.objects.all()
+    nft = get_object_or_404(NFT, id=nft_id)
+    auction = get_object_or_404(Auction, id=auction_id) if auction_id else None
+    wallet_id = request.GET.get('wallet_id')
+    wallet = get_object_or_404(Wallet, id=wallet_id) if wallet_id else None
 
     if request.method == 'POST':
-        form = AuctionForm(request.POST)
+        form = AuctionForm(request.POST, instance=auction)
         if form.is_valid():
             auction = form.save(commit=False)
             auction.nft = nft
             auction.saler = request.user
             auction.save()
-            return redirect('collection:nft_detail', nft_id=nft.id)
+            return redirect('collection:auction_sell', nft.id, auction.id)
     else:
-        form = AuctionForm()
+        form = AuctionForm(instance=auction)
 
     context = {
         'form': form,
-        'nft': nft,
         'currencies': currencies,
+        'nft': nft,
+        'auction': auction,
+        'wallet': wallet,
     }
 
     return render(request, 'nft-sell.html', context)
+
+
+@login_required
+def auction_update(request, auction_id):
+    currencies = Currency.objects.all()
+    auction = get_object_or_404(Auction, id=auction_id)
+    nft = auction.nft
+
+    if request.method == 'POST':
+        form = AuctionForm(request.POST, instance=auction)
+        if form.is_valid():
+            auction = form.save()
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect('collection:auction_detail', auction.nft.id, auction.id)
+    else:
+        form = AuctionForm(instance=auction)
+
+    context = {
+        'form': form,
+        'currencies': currencies,
+        'nft': nft,
+        'auction': auction,
+        'update': True,
+    }
+
+    return render(request, 'nft-sell.html', context)
+
+@login_required
+def auction_delete(request, auction_id):
+    auction = get_object_or_404(Auction, id=auction_id)
+    auction.delete()
+    return redirect('collection:user_nfts', request.user.username)
 
 
 @login_required

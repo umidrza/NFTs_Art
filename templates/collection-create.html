@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Create Collection
+    {% if is_update %}
+        Update collection
+    {% else %}
+        Create new collection
+    {% endif %}
 {% endblock title %}
 
 {% block main %}
@@ -9,7 +13,13 @@
 <section class="form-section">
     <div class="container">
         <div class="form-container">
-            <h2 class="section-title">Create new collection</h2>
+            <h2 class="section-title">
+                {% if is_update %}
+                    Update collection
+                {% else %}
+                    Create new collection
+                {% endif %}
+            </h2>
             <form class="form" method="post">
                 {% csrf_token %}
                 
@@ -23,14 +33,18 @@
                     </div>
                 {% endif %}
                 
+                
                 <div class="form-inputs-container">
                     <div class="form-inputs">
                         <div class="form-control">
                             <label for="blockchain" class="form-label">Blockchain</label>
                             <select name="blockchain" id="blockchain" class="form-select">
-                            {% for blockchain in blockchains %}
-                                <option class="form-option" value="{{ blockchain.id }}">{{ blockchain.name }}</option>
-                            {% endfor %}
+                                {% for blockchain in blockchains %}
+                                    <option class="form-option" value="{{ blockchain.id }}"
+                                        {% if collection and collection.blockchain.id == blockchain.id %}selected{% endif %}>
+                                        {{ blockchain.name }}
+                                    </option>
+                                {% endfor %}
                             </select>
                             {% if form.blockchain.errors %}
                                 <div class="form-error">
@@ -42,10 +56,11 @@
                                 </div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="form-control">
                             <label for="name" class="form-label">Name of Collection</label>
-                            <input type="text" name="name" class="form-input" placeholder="Type here..." required>
+                            <input type="text" name="name" class="form-input" placeholder="Type here..." 
+                                {% if collection %}value="{{ collection.name }}"{% endif %} required>
                             {% if form.name.errors %}
                                 <div class="form-error">
                                     <ul>
@@ -60,9 +75,12 @@
                         <div class="form-control">
                             <label for="category" class="form-label">Category</label>
                             <select name="category" id="category" class="form-select">
-                            {% for category in categories %}
-                                <option class="form-option" value="{{ category.id }}">{{ category.name }}</option>
-                            {% endfor %}
+                                {% for category in categories %}
+                                    <option class="form-option" value="{{ category.id }}"
+                                        {% if collection and collection.category.id == category.id %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
                             </select>
                             {% if form.category.errors %}
                                 <div class="form-error">
@@ -76,10 +94,22 @@
                         </div>
                     
                     <div class="form-buttons">
-                        <button type="submit" class="form-button btn-green">Create Collection</button>
+                        <button type="submit" class="form-button btn-green">
+                            {% if is_update %}
+                                Update Collection
+                            {% else %}
+                                Create Collection
+                            {% endif %}
+                        </button>
                     </div>
                 </div>
             </form>
+        {% if is_update %}
+            <form action="{% url 'collection:delete' collection.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="form-button btn-green delete-btn">Delete Collection</button>
+            </form>
+        {% endif %}
         </div>
     </div>
 </section>

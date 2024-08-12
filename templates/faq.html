@@ -27,50 +27,27 @@
                     <button type="submit" class="get-in-touch-button btn-green">Get In Touch</button>
                 </form>
             </div>
+            {% if faqs %}
             <div class="faq-container">
                 <h2 class="faq-title">
                     Maybe your question is have been
                     answered, check this out!
                 </h2>
                 <div class="faq-list">
+                {% for faq in faqs %}
                     <div class="faq dropdown">
                         <div class="faq-question dropdown-btn">
-                            <h4>When does minting begin?</h4>
-                            <i class="fa-solid fa-arrow-down arrow-icon"></i>
-                        </div>
-                        <p class="faq-answer section-desc dropdown-content opened">
-                            Initial distribution will begin on February 1st 2022 at 3:00 PM
-                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
-                            reveal will happen by this point in time. The initial distribution will be tiered to
-                            the benefit of those who have traded or voted on dYdX.
-                        </p>
-                    </div>
-                    <div class="faq dropdown">
-                        <div class="faq-question dropdown-btn">
-                            <h4>Who can mint one?</h4>
+                            <h4>{{ faq.question }}</h4>
                             <i class="fa-solid fa-arrow-down arrow-icon"></i>
                         </div>
                         <p class="faq-answer section-desc dropdown-content">
-                            Initial distribution will begin on February 1st 2022 at 3:00 PM
-                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
-                            reveal will happen by this point in time. The initial distribution will be tiered to
-                            the benefit of those who have traded or voted on dYdX.
+                            {{ faq.answer }}
                         </p>
                     </div>
-                    <div class="faq dropdown">
-                        <div class="faq-question dropdown-btn">
-                            <h4>Why should I hold one?</h4>
-                            <i class="fa-solid fa-arrow-down arrow-icon"></i>
-                        </div>
-                        <p class="faq-answer section-desc dropdown-content">
-                            Initial distribution will begin on February 1st 2022 at 3:00 PM
-                            UTC. The ongoing distribution will begin on February 8, 2022 at 3:00 PM UTC, and the
-                            reveal will happen by this point in time. The initial distribution will be tiered to
-                            the benefit of those who have traded or voted on dYdX.
-                        </p>
-                    </div>
+                {% endfor %}
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>

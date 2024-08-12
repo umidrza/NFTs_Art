@@ -80,6 +80,8 @@
                         {% if register_form.non_field_errors %}
                             <p class="form-warning">{{ register_form.non_field_errors.0 }}</p>
                         {% endif %}
+
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
                     </div>
                     <div class="form-buttons">
                         <button type="submit" name="register" class="form-button btn-green">Register</button>
@@ -124,6 +126,7 @@
             {% if login_form.non_field_errors %}
                 <p class="form-warning">{{ login_form.non_field_errors.0 }}</p>
             {% endif %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
             <button type="submit" name="login" class="btn-green">Login</button>
             <button type="button" class="btn-outline-green">Forgot Password?</button>
             <div class="register-link">

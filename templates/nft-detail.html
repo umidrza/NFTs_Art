@@ -94,7 +94,7 @@
                                     <p class="nft-auction-creator-name">{{ nft.creator.fullname }}</p>
                                 </div>
                             </div>
-                            {% if status == 'auction' %}
+                            {% if status != 'not-on-sale' %}
                             <div class="nft-auction-card-section">
                                 <p class="auction-text-grey">Collection</p> 
                                 <div class="auction-nft-card">
@@ -107,7 +107,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">{{ auction.saler.username }}</p>
+                                    <p class="nft-auction-creator-name">{{ auction.saler.fullname }}</p>
                                 </div>
                             </div>
                             {% endif %}
@@ -119,13 +119,25 @@
                             <i class="fa-solid fa-check check-icon hidden"></i>
                         </div>
                         <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
-                    </div>
+                    </div>  
                     <div class="auction-buttons">
-                        {% if status == 'auction' %}
-                        <button class="auction-button btn-green" disabled>Purchase now</button>
-                        <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                        {% if status != 'not-on-sale' %}
+                            {% if request.user == auction.saler %}
+                                <a href="{% url 'collection:auction_update' auction.id %}?next={{ request.path }}">
+                                    <button class="auction-button btn-green" disabled>Update</button>
+                                </a>         
+                                <form action="{% url 'collection:auction_delete' auction.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="auction-button btn-green delete-btn" disabled>Delete</button>
+                                </form>
+                            {% elif status == 'auction' %}
+                                <button class="auction-button btn-green" disabled>Purchase now</button>
+                                <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                            {% endif %}
                         {% elif request.user == nft.creator %}
-                        <a href="{% url 'collection:nft_sell' nft.id %}"><button class="auction-button btn-green" disabled>List item for Sale</button></a>
+                            <a href="{% url 'collection:nft_sell' nft.id %}">
+                                <button class="auction-button btn-green" disabled>List item for Sale</button>
+                            </a>
                         {% endif %}
                     </div>
                     <div class="auction-charts">
@@ -280,7 +292,6 @@
                         {% endif %}
                         {% endif %}
                     </div>
-                    
             </div>
         </div>
     </div>
@@ -346,6 +357,7 @@
 
 {% block scripts %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function(){
     $('.like-btn').click(function(){

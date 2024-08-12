@@ -103,6 +103,7 @@
                                                 </div>
                                             </div>
                                             {% if request.user == collection.creator %}
+                                                <a href="{% url 'collection:update' collection.id %}"><button class="btn-outline-green collection-card-btn">Update</button></a>
                                             {% elif collection.creator in following %}
                                                 <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
                                             {% else %}
@@ -110,6 +111,7 @@
                                             {% endif %}
                                         </div>
                                     </div>
+                                    {% if collection.nfts.exists %}
                                     <div class="collection-card-images">
                                         {% for nft in collection.nfts.all %}
                                             {% if forloop.counter <= 3 %}
@@ -127,6 +129,9 @@
                                             </a>
                                         {% endif %}
                                     </div> 
+                                    {% else %}
+                                        <div class="no-images">No nfts</div>
+                                    {% endif %}
                                 </div>
                             {% endfor %}
                         </div>
@@ -391,6 +396,7 @@
 
 {% block scripts %}
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function(){
         $('.follow-btn').click(function(){

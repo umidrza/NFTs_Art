@@ -184,8 +184,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const priceInput = document.getElementById('price-input');
         const priceDisplay = document.getElementById('price-display');
         const currencySelect = document.getElementById('currency');
-        const popupEndTime = document.getElementById('popup-end-time');
-        const popupPrice = document.getElementById('popup-price');
         const startTimeInput = document.getElementById('start-time');
         const endTimeInput = document.getElementById('end-time');
         const scheduleSelect = document.getElementById('schedule-time');
@@ -216,7 +214,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         priceInput.addEventListener('input', () => {
-            const currency = currencySelect.textContent;
+            const selectedCurrency = currencySelect.options[currencySelect.selectedIndex];
+            const currency = selectedCurrency.textContent;
             const price = +parseFloat(priceInput.value).toFixed(2) || 0;
             priceDisplay.textContent = `${price} ${currency}`;
         });
@@ -224,8 +223,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // document.getElementById('complete-listing-btn').addEventListener('click', (e) => {
         //     e.preventDefault();
         //     document.getElementById('listing-popup').classList.add('active');
-        //     popupEndTime.textContent = endTimeInput.value;
-        //     popupPrice.textContent = priceDisplay.textContent;
+        //     document.getElementById('popup-end-time').setAttribute('data-date', endTimeInput.value);
+        //     document.getElementById('popup-price').textContent = priceDisplay.textContent;
         // });
 
         // document.getElementById('sign-btn').addEventListener('click', (e) => {
@@ -303,12 +302,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.wallet').forEach(wallet => {
             wallet.addEventListener('click', () => {
                 walletPopup.classList.add('active');
+                wallet.querySelector('input[name="provider"]').checked = true;
                 const walletImage = wallet.querySelector('.wallet-image img');
                 const walletName = wallet.querySelector('.wallet-name');
-                const walletType = document.querySelector('input[name="connect-wallet"]:checked + label');
+                const walletBlockchain = document.querySelector('input[name="blockchain"]:checked + label');
                 walletPopup.querySelector('.wallet-image img').src = walletImage.src;
                 walletPopup.querySelector('.wallet-name').textContent = walletName.textContent;
-                walletPopup.querySelector('.wallet-info').textContent = walletType.textContent;
+                walletPopup.querySelector('.wallet-info').textContent = walletBlockchain.textContent;
             })
         })
     }
@@ -317,11 +317,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const collectionSection = document.querySelector('.collection-section');
     if (collectionSection) {
         const collectionFilters = collectionSection.querySelector('.collection-cards-filters');
-        const searchRemoveBtn = collectionSection.querySelector('.remove-search-btn');
         const nftSearchInput = collectionSection.querySelector('#nft-search');
         const collectionSearchInput = collectionSection.querySelector('#collection-search');
-
-
+        const searchRemoveBtn = collectionSection.querySelector('.remove-search-btn');
+        
+        
         if (nftSearchInput) {
             const nftCardsParent = collectionSection.querySelector('.collection-nft-cards');
             const nftCards = nftCardsParent.querySelectorAll('.nft-card');
@@ -399,7 +399,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const categoryFilters = collectionFilters.querySelectorAll('input[name="category"]');
             const blockchainFilter = collectionSection.querySelector('#blockchains');
             const sortByFilter = document.getElementById('sort-by-collection');
-
             categoryFilters.forEach(cb => cb.addEventListener('change', FilterCollections));
             blockchainFilter.addEventListener('change', FilterCollections);
             collectionSearchInput.addEventListener('input', FilterCollections);

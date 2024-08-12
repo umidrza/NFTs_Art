@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('home.urls'), name='home'),
     path('collection/', include('collection.urls'), name='collection'),
     path('user/', include('users.urls'), name='user'),
+    path('wallet/', include('wallet.urls'), name='wallet'),
 ]
 
 if settings.DEBUG:
