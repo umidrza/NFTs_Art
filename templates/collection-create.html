@@ -33,6 +33,32 @@
                     </div>
                 {% endif %}
                 
+                <div class="form-control">
+                    <label class="form-label">Select NFTs</label>
+                    <div class="form-collections">
+                        {% for nft in nfts %}
+                            <div class="form-collection">
+                                <input type="checkbox" id="nft_{{ nft.id }}" name="nfts" value="{{ nft.id }}"
+                                    {% if collection and nft in collection.nfts.all %}checked{% endif %} class="hidden">
+                                <label for="nft_{{ nft.id }}">
+                                    <img src="{{ nft.image.url }}" class="form-collection-image">
+                                </label>
+                                <label for="nft_{{ nft.id }}" class="form-collection-name">
+                                    <span>{{ nft.name }}</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if form.nfts.errors %}
+                        <div class="form-error">
+                            <ul>
+                                {% for error in form.nfts.errors %}
+                                    <li class="form-warning">{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
                 
                 <div class="form-inputs-container">
                     <div class="form-inputs">

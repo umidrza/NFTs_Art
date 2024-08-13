@@ -22,7 +22,7 @@ class Wallet(models.Model):
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
     key = models.CharField(max_length=15, unique=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=20, decimal_places=2, default=0)
     expiration = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):

@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from .models import Wallet, Provider, Blockchain
 from .forms import WalletForm
 import random
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def connect_wallet(request):
     providers = Provider.objects.all()
     blockchains = Blockchain.objects.all()
@@ -13,6 +15,7 @@ def connect_wallet(request):
         if form.is_valid():
             provider = form.cleaned_data['provider']
             blockchain = form.cleaned_data['blockchain']
+            balance = form.cleaned_data['balance']
 
             wallet, created = Wallet.objects.get_or_create(
                 user=request.user,
@@ -20,6 +23,8 @@ def connect_wallet(request):
                 blockchain=blockchain,
                 defaults={'key': ''.join(random.choices('0123456789', k=15))}
             )
+            wallet.balance = balance
+            wallet.save()
 
             next_url = request.GET.get('next') or request.POST.get('next')
             if next_url:
@@ -30,7 +35,6 @@ def connect_wallet(request):
             
     else:
         form = WalletForm()
-
 
     context = {
         'providers': providers,

@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Place a bid
+{% endblock title %}
+
+{% block main %}
+
+<section class="form-section">
+    <div class="container">
+        <div class="form-container">
+            <h2 class="section-title">
+                Place a bid
+            </h2>
+            <form class="form" method="post">
+                {% csrf_token %}
+                <div class="form-preview">
+                    <h4 class="form-subtitle">Preview</h4>
+                    <h3 class="nft-sell-name">{{ nft.name }}</h3>
+                    <div class="nft-form-image">
+                        <img src="{{ nft.image.url }}" alt="NFT Image">
+                    </div>
+                    <div class="nft-sell-price">
+                        <p>Price</p>
+                        <h4>{{ auction.price }}</h4>
+                    </div>
+                </div>
+                <div class="form-inputs-container">
+                    <div class="form-inputs">
+                        <div class="form-control">
+                            <label for="amount" class="form-label">Price</label>
+                            <input type="number" id="amount-input" name="amount" class="form-input" placeholder="Type here..." step="0.01"
+                                {% if bid %}value="{{ bid.amount }}"{% endif %}>
+                            {% if form.amount.errors %}
+                                <div class="form-warning">{{ form.amount.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% comment %} <div class="form-control">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" id="quantity-input" name="quantity" class="form-input" placeholder="Type here..."
+                                {% if bid %}value="{{ bid.quantity }}"{% else %}value="1"{% endif %}  min="1" required>
+                            {% if form.quantity.errors %}
+                                <div class="form-warning">{{ form.quantity.errors }}</div>
+                            {% endif %}
+                        </div> {% endcomment %}
+                        <div class="form-control">
+                            <label for="expiration" class="form-label">Expiration</label>
+                            <input type="date" name="expiration" id="expiration" class="form-input"
+                                {% if bid %}value="{{ bid.expiration|date:'Y-m-d' }}"{% endif %} required>
+                            {% if form.expiration.errors %}
+                                <div class="form-warning">{{ form.expiration.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="form-button btn-green">
+                            Place a bid
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock main %}
+

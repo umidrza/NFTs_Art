@@ -1732,6 +1732,7 @@ tr.spacing td {
 .collection-card-btn {
     padding: 8px 24px;
     font-size: 14px;
+    height: 40px;
 }
 
 .collection-filters {
@@ -2607,8 +2608,9 @@ input[type='number']::-webkit-outer-spin-button {
 
 .form-collections {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    flex-wrap: wrap;
     gap: 16px;
 }
 
@@ -3430,4 +3432,61 @@ body:has(.notfound-section) {
 
 .popup-subheader-desc .show-more {
     color: #52B4C1;
+}
+
+
+
+/* 
+ *  MORE
+ */
+
+.messages{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    position: fixed;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+    width: 60%;
+}
+
+.alert{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: var(--text-primary-color);
+    text-align: center;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.08px;
+    border-radius: 25px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    opacity: 1;
+    transition: 0.5s ease-out;
+}
+
+.alert-success {
+    background-color: #00C566;
+    color: white;
+}
+
+.alert-error {
+    background-color: #EB3F5E;
+    color: white;
+}
+
+.alert-info {
+    background-color: #FFCD1A;
+    color: white;
+}
+
+.deactive{
+    opacity: 0;
+    pointer-events: none;
 }

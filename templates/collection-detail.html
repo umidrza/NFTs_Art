@@ -13,9 +13,9 @@
                 <div class="collection-creators">
                     <h2 class="collection-creators-title">The Best Collectors for <br>NFTs</h2>
                     <div class="collection-creator">
-                        <a href="{% url 'collection:user_collections' creator.username %}">
+                        <a href="{% url 'collection:user_collections' collector.username %}">
                             <div class="avatar">
-                                <img class="avatar-img" src="{{ creator.avatar.image.url }}">
+                                <img class="avatar-img" src="{{ collector.avatar.image.url }}">
                                 <div class="avatar-icons">
                                     <div class="verified-icon">
                                         <i class="star-icon"></i>
@@ -26,32 +26,32 @@
                         </a>
                         <div class="collection-creator-desc">
                             <div class="collection-creator-info">
-                                <a href="{% url 'collection:user_collections' creator.username %}">
-                                    <h4 class="collection-creator-fullname">{{ creator.fullname }}</h4>
+                                <a href="{% url 'collection:user_collections' collector.username %}">
+                                    <h4 class="collection-creator-fullname">{{ collector.fullname }}</h4>
                                 </a>
-                                <a href="{% url 'collection:user_collections' creator.username %}">
-                                    <p class="collection-creator-username">@{{ creator.username }}</p>
+                                <a href="{% url 'collection:user_collections' collector.username %}">
+                                    <p class="collection-creator-username">@{{ collector.username }}</p>
                                 </a>
                             </div>
                             <div class="collection-creator-detail">
                                 <div class="collection-creator-stats">
                                     <div class="collection-creator-stat">
                                         <p>Collections</p>
-                                        <h5>{{ creator.collections.count }}</h5>
+                                        <h5>{{ collector.collections.count }}</h5>
                                     </div>
                                     <div class="collection-creator-stat">
                                         <p>Followers</p>
-                                        <h5 class="creator-followers-count">{{ creator.followers.count }}</h5>
+                                        <h5 class="creator-followers-count">{{ collector.followers.count }}</h5>
                                     </div>
                                 </div>
-                                {% if request.user == creator %}
-                                    <a href="{% url 'collection:user_nfts' creator.username %}">
+                                {% if request.user == collector %}
+                                    <a href="{% url 'collection:user_nfts' collector.username %}">
                                         <button class="btn-green collection-card-btn">My NFTs</button>
                                     </a>
                                 {% elif following %}
-                                    <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ creator.id }}">Following</button>
+                                    <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collector.id }}">Following</button>
                                 {% else %}
-                                    <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ creator.id }}">Follow</button>
+                                    <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collector.id }}">Follow</button>
                                 {% endif %}
                             </div>
                         </div>

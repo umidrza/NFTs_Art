@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    {% if update %}
+    {% if operation == 'update' %}
         Update Auction
     {% else %}
         List for Sale
@@ -14,7 +14,7 @@
     <div class="container">
         <div class="form-container">
             <h2 class="section-title">
-                {% if update %}
+                {% if operation == 'update' %}
                     Update Auction
                 {% else %}
                     List Item for Sale
@@ -55,18 +55,6 @@
                                     <div class="form-warning">{{ form.price.errors }}</div>
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="form-control">
-                            {% if request.user != nft.creator %}
-                                <label for="quantity" class="form-label">Quantity</label>
-                                <input type="number" id="quantity-input" name="quantity" class="form-input" placeholder="Type here..."
-                                    {% if auction %}value="{{ auction.quantity }}"{% endif %}>
-                                {% if form.quantity.errors %}
-                                    <div class="form-warning">{{ form.quantity.errors }}</div>
-                                {% endif %}
-                            {% else %}
-                                <input type="hidden" name="quantity" value="1">
-                            {% endif %}
                         </div>
                         <div class="form-control">
                             <label for="schedule-time" class="form-label">Schedule Listing</label>
@@ -118,7 +106,7 @@
                     </div>
                     <div class="form-buttons">
                         <button type="submit" class="form-button btn-green" id="complete-listing-btn">
-                            {% if update %}
+                            {% if operation == 'update' %}
                                 Update Auction
                             {% else %}
                                 Complete Listing
@@ -131,7 +119,7 @@
     </div>
 </section>
 
-{% if auction and not update %}
+{% if operation == 'sell' %}
 <section class="popup-section active" id="listing-popup" >
     <div class="popup">
         <div class="popup-header">
@@ -164,7 +152,7 @@
 </section>
 {% endif %}
 
-{% if wallet and auction %}
+{% if operation == 'sell' and wallet %}
 <section class="popup-section active" id="completed-popup">
     <div class="popup">
         <div class="popup-header">

@@ -6,5 +6,4 @@ app_name = 'user'
 urlpatterns = [
     path('login/', login_register_view, name='login'),
     path('<int:user_id>/follow/', follow_user, name='follow'),
-    path('connect-wallet/', connect_wallet, name='connect_wallet'),
 ]

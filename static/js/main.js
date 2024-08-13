@@ -113,6 +113,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    document.querySelectorAll('.alert').forEach(alert => {
+        setTimeout(() => {
+            alert.classList.add('deactive');
+        }, 2000); 
+    
+        setTimeout(() => {
+            alert.remove();
+        }, 2500);
+    });
+
     document.querySelectorAll('.popup-close-btn').forEach(popupCloseBtn => {
         popupCloseBtn.addEventListener('click', () => {
             popupCloseBtn.closest('.popup-section').classList.remove('active');
@@ -123,6 +133,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const usd = eth.parentElement.querySelector('.usd');
         const usdAmount = convertEthToUsd(parseFloat(eth.textContent));
         usd.textContent = `$${usdAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    });
+
+    document.querySelectorAll('.difference').forEach(diffElement => {
+        const nftPrice = parseFloat(diffElement.getAttribute('data-price'));
+        const bidAmount = parseFloat(diffElement.getAttribute('data-bid-amount'));
+        const quantity = parseFloat(diffElement.getAttribute('data-quantity'));
+        const percentage = (((bidAmount - nftPrice * quantity) / nftPrice) * 100).toFixed(0);
+
+        if(nftPrice && bidAmount && quantity){
+            if (percentage > 0) {
+                diffElement.textContent = `${percentage}% above`;
+            } else {
+                diffElement.textContent = `${Math.abs(percentage)}% below`;
+            }
+        }
+        else{
+            diffElement.textContent = 'N/A'
+        }
     });
 
     document.querySelectorAll('.countdown').forEach(countdownElement => {
@@ -192,9 +220,11 @@ document.addEventListener('DOMContentLoaded', function () {
         startTimeInput.setAttribute('min', today);
         startTimeInput.value = today;
 
+        updatePrice();
         updateEndTime();
         scheduleSelect.addEventListener('change', updateEndTime);
         startTimeInput.addEventListener('change', updateEndTime);
+        priceInput.addEventListener('input', updatePrice);
 
         function updateEndTime() {
             const scheduleValue = scheduleSelect.value.split('-');
@@ -212,13 +242,12 @@ document.addEventListener('DOMContentLoaded', function () {
             endTimeInput.setAttribute('min', startTimeInput.value);
         }
 
-
-        priceInput.addEventListener('input', () => {
+        function updatePrice() {
             const selectedCurrency = currencySelect.options[currencySelect.selectedIndex];
             const currency = selectedCurrency.textContent;
             const price = +parseFloat(priceInput.value).toFixed(2) || 0;
             priceDisplay.textContent = `${price} ${currency}`;
-        });
+        }
 
         // document.getElementById('complete-listing-btn').addEventListener('click', (e) => {
         //     e.preventDefault();

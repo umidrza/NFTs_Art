@@ -58,8 +58,3 @@ def follow_user(request, user_id):
         return JsonResponse({'status': 'unfollowed'})
     
     return JsonResponse({'status': 'followed'})
-
-
-@login_required
-def connect_wallet(request):
-    return render(request, 'connect-wallet.html')

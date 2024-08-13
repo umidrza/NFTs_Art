@@ -22,6 +22,7 @@ class Collection(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='collections', on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     blockchain = models.ForeignKey(Blockchain, on_delete=models.SET_NULL, null=True)
+    nfts = models.ManyToManyField('NFT', related_name='collections', blank=True)
 
     def __str__(self):
         return self.name
@@ -33,7 +34,6 @@ class NFT(models.Model):
     image = models.ImageField(upload_to='nfts/')
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='created_nfts')
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
-    collections = models.ManyToManyField(Collection, related_name='nfts', blank=True)
     collectors = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='nfts', blank=True)
 
     def __str__(self):

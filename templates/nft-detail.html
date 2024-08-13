@@ -6,6 +6,20 @@
 
 {% block main %}
 
+{% if messages %}
+<section class="messages-section">
+    <div class="container">
+        <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <section class="auction-detail-section">
     <div class="container">
         <div class="auction">
@@ -54,7 +68,7 @@
                             {% if status == 'auction' or status == 'expired' %}
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Current bid</p>
-                                <h4 class="auction-text-black eth">{{ auction.price }}</h4>
+                                <h4 class="auction-text-black eth">{{ auction.price }} {{ auction.currency.symbol }}</h4>
                                 <p class="auction-text-grey usd"></p>
                             </div>
                             {% endif %}
@@ -83,7 +97,7 @@
                                 <p class="auction-text-grey">Creator</p>
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="{{ nft.creator.avatar.image.url }}"></a>
+                                        <a href="{% url 'collection:user_collections' nft.creator.username %}"><img class="avatar-img" src="{{ nft.creator.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -99,7 +113,7 @@
                                 <p class="auction-text-grey">Collection</p> 
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
+                                        <a href="{% url 'collection:user_collections' auction.saler.username %}"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -130,12 +144,17 @@
                                     {% csrf_token %}
                                     <button type="submit" class="auction-button btn-green delete-btn" disabled>Delete</button>
                                 </form>
-                            {% elif status == 'auction' %}
-                                <button class="auction-button btn-green" disabled>Purchase now</button>
-                                <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                            {% elif status == 'auction' and request.user not in nft.collectors.all %}
+                                <form action="{% url 'collection:auction_purchase' auction.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="auction-button btn-green" disabled>Purchase now</button>
+                                </form>
+                                <a href="{% url 'collection:auction_bid' auction.id %}">
+                                    <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                                </a>
                             {% endif %}
                         {% elif request.user == nft.creator %}
-                            <a href="{% url 'collection:nft_sell' nft.id %}">
+                            <a href="{% url 'collection:auction_create' nft.id %}">
                                 <button class="auction-button btn-green" disabled>List item for Sale</button>
                             </a>
                         {% endif %}
@@ -277,7 +296,7 @@
                                                 </td>
                                                 <td class="usd"></td>
                                                 <td>{{ bid.quantity }}</td>
-                                                <td>12% below</td>
+                                                <td class="difference" data-price="{{ auction.price }}" data-bid-amount="{{ bid.amount }}" data-quantity="{{ bid.quantity }}"></td>
                                                 <td class="countdown days" data-date="{{ bid.expiration|date:'c' }}"></td>
                                                 <td>{{ bid.bidder }}</td>
                                             </tr>
