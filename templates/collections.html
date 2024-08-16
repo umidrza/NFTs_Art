@@ -79,10 +79,10 @@
                         </div>
                         {% endif %}
                     </div>
-                    {% if collections %}
+                    {% if page_obj %}
                     <div class="collection-cards-pagination">
                         <div class="collection-cards">
-                            {% for collection in collections %}
+                            {% for collection in page_obj %}
                                 <div class="collection-card" data-category="{{ collection.category.id }}" data-blockchain="{{ collection.blockchain.id }}">
                                     <div class="collection-card-desc">
                                         <div class="collection-card-title">
@@ -135,19 +135,41 @@
                                 </div>
                             {% endfor %}
                         </div>
+                        {% if paginator.num_pages > 1 %}
                         <div class="collection-pagination">
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </div>
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}">
+                                    <div class="icon-box">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <div class="icon-box disabled">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </div>
+                            {% endif %}
                             <div class="pagination">
-                                <a href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <strong class="pagination-number">{{ num }}</strong>
+                                    {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'3' %}
+                                        <a href="?page={{ num }}" class="pagination-number">{{ num }}</a>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
-                            <div class="icon-box">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </div>
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}">
+                                    <div class="icon-box">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </div>
+                                </a>
+                            {% else %}
+                                <div class="icon-box disabled">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </div>
+                            {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                     {% endif %}
                 </div>
@@ -414,12 +436,11 @@
                 success: function(data) {
                     if (data.status == 'followed') {
                         button.removeClass('btn-green').addClass('btn-outline-green').text('Following');
-                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount + 1);
                     } else if (data.status == 'unfollowed') {
                         button.removeClass('btn-outline-green').addClass('btn-green').text('Follow');
-                        button.closest('.collection-card-detail').find('.creator-followers-count').text(followersCount - 1);
                     }
-                },
+                    button.closest('.collection-card-detail').find('.creator-followers-count').text(data.follower_count);
+                }
             });
         });
     });

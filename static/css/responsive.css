@@ -61,9 +61,22 @@
         gap: 32px;
     }
 
+    .collection-cards-pagination{
+        width: 100%;
+    }
+
+    .collection-creators-filters {
+        width: 100%;
+    }
+
     .newsletter-faq {
         flex-direction: column;
         gap: 80px;
+    }
+
+    .collection-cards-filters {
+        flex-direction: column;
+        gap: 56px
     }
 }
 
@@ -176,11 +189,6 @@
     .roadmap-line .roadmap-vector {
         width: 1px;
         height: 100%;
-    }
-
-    .collection-cards-filters {
-        flex-direction: column;
-        gap: 56px
     }
 
     .notfound h2 {

@@ -191,6 +191,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    const auctionShare = document.querySelector('.auction-share-action');
+    if (auctionShare){
+        const auctionShareBtn = auctionShare.querySelector('.auction-share-btn');
+        const auctionShareText = auctionShare.querySelector('.auction-action-text');
+
+        auctionShareBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href);
+            auctionShareText.textContent = 'Copied';
+            setTimeout(() => auctionShareText.textContent = 'Share', 3000);
+        });
+    }
+    
+
     if (document.getElementById('nft-create-form')) {
         const imageInput = document.getElementById('upload-image-input');
         imageInput.addEventListener('change', (event) => {
@@ -260,6 +273,22 @@ document.addEventListener('DOMContentLoaded', function () {
         //     e.preventDefault();
         //     document.getElementById('completed-popup').classList.add('active');
         // });
+
+
+        const walletLink = document.querySelector('.popup-nft-link');
+        if(walletLink){
+            const walletKey = walletLink.querySelector('.popup-wallet-link');
+            const copyBtn = walletLink.querySelector('.wallet-copy-btn');
+            const fullKey = walletKey.getAttribute('data-key');
+            const truncatedKey = `0x${fullKey.slice(0, 7)}...K${fullKey.slice(-3)}`;
+            walletKey.textContent = truncatedKey;
+
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(fullKey);
+                copyBtn.classList.toggle('fa-solid');
+                copyBtn.classList.toggle('fa-regular');
+            });
+        }
     }
 
     if (document.getElementById('register-form')) {
@@ -338,21 +367,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 walletPopup.querySelector('.wallet-image img').src = walletImage.src;
                 walletPopup.querySelector('.wallet-name').textContent = walletName.textContent;
                 walletPopup.querySelector('.wallet-info').textContent = walletBlockchain.textContent;
-            })
-        })
+            });
+        });
     }
 
-
-    const collectionSection = document.querySelector('.collection-section');
-    if (collectionSection) {
-        const collectionFilters = collectionSection.querySelector('.collection-cards-filters');
-        const nftSearchInput = collectionSection.querySelector('#nft-search');
-        const collectionSearchInput = collectionSection.querySelector('#collection-search');
-        const searchRemoveBtn = collectionSection.querySelector('.remove-search-btn');
+    if (document.querySelector('.collection-section')) {
+        const collectionFilters = document.querySelector('.collection-cards-filters');
+        const nftSearchInput = document.querySelector('#nft-search');
+        const collectionSearchInput = document.querySelector('#collection-search');
+        const searchRemoveBtn = document.querySelector('.remove-search-btn');
         
         
         if (nftSearchInput) {
-            const nftCardsParent = collectionSection.querySelector('.collection-nft-cards');
+            const nftCardsParent = document.querySelector('.collection-nft-cards');
+            const collectionPagination = document.querySelector('.collection-pagination');
             const nftCards = nftCardsParent.querySelectorAll('.nft-card');
             const statusFilters = collectionFilters.querySelectorAll('input[name="status"]');
             const currencyFilters = collectionFilters.querySelectorAll('input[name="currency"]');
@@ -373,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             function FilterNfts() {
                 const selectedStatusFilters = Array.from(statusFilters).filter(cb => cb.checked).map(cb => cb.value);
-                const selectedCurrency = collectionSection.querySelector('input[name="currency"]:checked').value;
+                const selectedCurrency = document.querySelector('input[name="currency"]:checked').value;
                 const searchText = nftSearchInput.value.toLowerCase();
                 const minValue = parseFloat(minValueFilter.value);
                 const maxValue = parseFloat(maxValueFilter.value);
@@ -414,19 +442,30 @@ document.addEventListener('DOMContentLoaded', function () {
                             return 0;
                     }
                 });
-
-                nftCardsParent.innerHTML = '';
-                sortedCards.forEach(card => nftCardsParent.appendChild(card));
+                
+                
+                if (sortedCards.length > 0){
+                    nftCardsParent.innerHTML = '';
+                    sortedCards.forEach(card => nftCardsParent.appendChild(card));
+                    if (collectionPagination)
+                        collectionPagination.classList.remove('hidden');
+                }
+                else{
+                    nftCardsParent.innerHTML = 'No nft with this filter';
+                    if (collectionPagination)
+                        collectionPagination.classList.add('hidden');
+                }
             }
 
 
         }
 
         if (collectionSearchInput) {
-            const collectionCardsParent = collectionSection.querySelector('.collection-cards');
+            const collectionCardsParent = document.querySelector('.collection-cards');
+            const collectionPagination = document.querySelector('.collection-pagination');
             const collectionCards = Array.from(collectionCardsParent.querySelectorAll('.collection-card'));
             const categoryFilters = collectionFilters.querySelectorAll('input[name="category"]');
-            const blockchainFilter = collectionSection.querySelector('#blockchains');
+            const blockchainFilter = document.querySelector('#blockchains');
             const sortByFilter = document.getElementById('sort-by-collection');
             categoryFilters.forEach(cb => cb.addEventListener('change', FilterCollections));
             blockchainFilter.addEventListener('change', FilterCollections);
@@ -471,46 +510,82 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                collectionCardsParent.innerHTML = '';
-                sortedCards.forEach(card => collectionCardsParent.appendChild(card));
+                if (sortedCards.length > 0){
+                    collectionCardsParent.innerHTML = '';
+                    sortedCards.forEach(card => collectionCardsParent.appendChild(card));
+                    if (collectionPagination)
+                        collectionPagination.classList.remove('hidden');
+                }
+                else{
+                    collectionPagination.classList.add('hidden');
+                    if (collectionPagination)
+                        collectionCardsParent.innerHTML = 'No collection with this filter';
+                }
             }
         }
-
 
         if (collectionFilters) {
             const switch1 = document.getElementById('switch1');
             const switch2 = document.getElementById('switch2');
             const switch3 = document.getElementById('switch3');
+            const pageWidth = window.innerWidth;
+            
+            function updateCardCounts(cardsCount, collectionCount) {
+                root.style.setProperty('--nft-cards-count', cardsCount);
+                root.style.setProperty('--collection-cards-count', collectionCount);
+            }
+            
+            function handleSwitchChange() {
 
+                if (switch1 && switch1.checked) {
+                    if (pageWidth > 1200) { 
+                        updateCardCounts(3, 3);
+                    } else if (pageWidth > 992) { 
+                        updateCardCounts(2, 2);
+                    }
+                    collectionFilters.classList.remove('layout-3');
+                } else if (switch2 && switch2.checked) {
+                    if (pageWidth > 1200) { 
+                        updateCardCounts(4, 3);
+                    } else if (pageWidth > 992) {
+                        updateCardCounts(3, 2);
+                    }
+                    collectionFilters.classList.remove('layout-3');
+                } else if (switch3 && switch3.checked) {
+                    if (pageWidth > 1200) { 
+                        updateCardCounts(4, 4);
+                    } else if (pageWidth > 992) {
+                        updateCardCounts(3, 3);
+                    }
+                    collectionFilters.classList.add('layout-3');
+                }
+            }
 
+            if (pageWidth < 992) {
+                switch1.parentElement.classList.add('hidden');
+                switch3.checked = true;
+            }
+            
             if (switch1) {
-                switch1.addEventListener('change', function () {
-                    if (switch1.checked) {
-                        // root.style.setProperty('--nft-cards-count', 3);
-                        collectionFilters.classList.remove('layout-3');
-                    }
-                });
+                switch1.addEventListener('change', handleSwitchChange);
+                if(pageWidth < 992) {
+                    switch1.parentElement.classList.add('hidden');
+                }
             }
-
+            
             if (switch2) {
-                switch2.addEventListener('change', function () {
-                    if (switch2.checked) {
-                        // root.style.setProperty('--collection-cards-count', 3);
-                        // root.style.setProperty('--nft-cards-count', 4);
-                        collectionFilters.classList.remove('layout-3');
-                    }
-                });
+                switch2.addEventListener('change', handleSwitchChange);
+            }
+            
+            if (switch3) {;
+                switch3.addEventListener('change', handleSwitchChange);
+                if (pageWidth < 992) {
+                    switch3.checked = true;
+                }
             }
 
-            if (switch3) {
-                switch3.addEventListener('change', function () {
-                    if (switch3.checked) {
-                        // root.style.setProperty('--collection-cards-count', 4);
-                        // root.style.setProperty('--nft-cards-count', 4);
-                        collectionFilters.classList.add('layout-3');
-                    }
-                });
-            }
+            handleSwitchChange();
+            window.addEventListener('resize', handleSwitchChange);
         }
     }
 });

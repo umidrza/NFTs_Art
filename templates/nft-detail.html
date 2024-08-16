@@ -6,20 +6,6 @@
 
 {% block main %}
 
-{% if messages %}
-<section class="messages-section">
-    <div class="container">
-        <div class="messages">
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
 <section class="auction-detail-section">
     <div class="container">
         <div class="auction">
@@ -38,8 +24,8 @@
                         {% endif %}
                         <p class="auction-action-text like-count">{{ nft.likes.count }}</p>
                     </div>
-                    <div class="auction-action">
-                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    <div class="auction-action auction-share-action">
+                        <i class="fa-solid fa-arrow-up-from-bracket auction-share-btn"></i>
                         <p class="auction-action-text">Share</p>
                     </div>
                     <div class="auction-action">

@@ -150,7 +150,7 @@
                                 <p class="auction-text-grey">Creator</p>
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="{{ auction.nft.creator.avatar.image.url }}"></a>
+                                        <a href="{% url 'collection:user_collections' auction.nft.creator.username %}"><img class="avatar-img" src="{{ auction.nft.creator.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -158,14 +158,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">{{ auction.nft.creator.username }}</p>
+                                    <p class="nft-auction-creator-name">{{ auction.nft.creator.fullname }}</p>
                                 </div>
                             </div>
                             <div class="nft-auction-card-section">
                                 <p class="auction-text-grey">Collection</p>
                                 <div class="auction-nft-card">
                                     <div class="avatar auction-avatar">
-                                        <a href="#"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
+                                        <a href="{% url 'collection:user_collections' auction.saler.username %}"><img class="avatar-img" src="{{ auction.saler.avatar.image.url }}"></a>
                                         <div class="avatar-icons">
                                             <div class="verified-icon">
                                                 <i class="star-icon"></i>
@@ -173,7 +173,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="nft-auction-creator-name">{{ auction.saler.username }}</p>
+                                    <p class="nft-auction-creator-name">{{ auction.saler.fullname }}</p>
                                 </div>
                             </div>
                         </div>
@@ -186,8 +186,23 @@
                     <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                 </div>
                 <div class="auction-buttons">
-                    <button class="auction-button btn-green" disabled>Purchase now</button>
-                    <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                    {% if request.user == auction.saler %}
+                        <a href="{% url 'collection:auction_update' auction.id %}?next={{ request.path }}">
+                            <button class="auction-button btn-green" disabled>Update</button>
+                        </a>         
+                        <form action="{% url 'collection:auction_delete' auction.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="auction-button btn-green delete-btn" disabled>Delete</button>
+                        </form>
+                    {% elif status == 'auction' and request.user not in nft.collectors.all %}
+                        <form action="{% url 'collection:auction_purchase' auction.id %}" method="post">
+                            {% csrf_token %}
+                            <button class="auction-button btn-green" disabled>Purchase now</button>
+                        </form>
+                        <a href="{% url 'collection:auction_bid' auction.id %}">
+                            <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

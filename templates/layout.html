@@ -87,6 +87,20 @@
     </header>
 
     <main>
+        {% if messages %}
+        <section class="messages-section">
+            <div class="container">
+                <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
         {% block main %}
         {% endblock main %}
     </main>

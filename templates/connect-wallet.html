@@ -6,20 +6,6 @@
 
 {% block main %}
 
-{% if messages %}
-<section class="messages-section">
-    <div class="container">
-        <div class="messages">
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
 <form method="post">
     {% csrf_token %}
     <section class="connect-wallet-section">

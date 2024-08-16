@@ -108,6 +108,9 @@ body:has(header) {
     border: none;
     transition: 300ms;
     min-width: fit-content;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .btn-green {
@@ -2288,9 +2291,10 @@ tr.spacing td {
 .collection-pagination {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     width: 100%;
     padding: 0 10px;
+    gap: 24px;
 }
 
 .icon-box {
@@ -2301,10 +2305,13 @@ tr.spacing td {
     align-items: center;
     justify-content: center;
     transition: 300ms;
-    cursor: pointer;
 }
 
-.icon-box:hover {
+.icon-box.disabled{
+    color: var(--grayscale-30-90);
+}
+
+.icon-box:not(.disabled):hover {
     background-color: var(--grayscale-30-90);
 }
 

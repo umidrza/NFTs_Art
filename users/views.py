@@ -4,6 +4,8 @@ from .forms import RegisterForm, LoginForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Follow
 from django.http import JsonResponse
+from django.contrib import messages
+
 
 def login_register_view(request):
     register_form = RegisterForm()
@@ -18,12 +20,15 @@ def login_register_view(request):
                 new_user = authenticate(username=user.username, password=request.POST['password1'])
                 if new_user is not None:
                     login(request, new_user)
+                    messages.success(request, 'Registration successful. You are now logged in.')
 
                     next_url = request.GET.get('next')
                     if next_url:
                         return redirect(next_url)
                     else:
                         return redirect('home')
+                else:
+                    messages.error(request, 'There was an issue logging in after registration. Please try logging in manually.')
                 
         elif 'login' in request.POST:
             login_form = LoginForm(request.POST)
@@ -34,6 +39,7 @@ def login_register_view(request):
                 user = authenticate(username=username, password=password)
                 if user is not None:
                     login(request, user)
+                    messages.success(request, f'Welcome back {user.fullname}')
                     next_url = request.GET.get('next')
                     if next_url:
                         return redirect(next_url)
@@ -55,6 +61,8 @@ def follow_user(request, user_id):
     follow, created = Follow.objects.get_or_create(follower=request.user, following=user_to_follow)
     if not created:
         follow.delete()
-        return JsonResponse({'status': 'unfollowed'})
+        follower_count = user_to_follow.followers.count()
+        return JsonResponse({'status': 'unfollowed', 'follower_count': follower_count})
     
-    return JsonResponse({'status': 'followed'})
+    follower_count = user_to_follow.followers.count()
+    return JsonResponse({'status': 'followed' , 'follower_count': follower_count})
