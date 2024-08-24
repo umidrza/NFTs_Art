@@ -21,5 +21,5 @@ urlpatterns = [
     path('auction/<int:auction_id>/bid/', auction_bid, name='auction_bid'),
     path('auction/<int:auction_id>/purchase/', auction_purchase, name='auction_purchase'),
     path('<str:username>/', collections_list, name='user_collections'),
-    path('<str:username>/nfts/', user_nfts, name='user_nfts'),
+    path('<str:username>/nfts/', collection_detail, name='user_nfts'),
 ]

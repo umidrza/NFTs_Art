@@ -25,11 +25,15 @@
             <div class="more-avatar hero-avatar"><span>+50K</span></div>
         </div>
     </div>
+    {% if staff_users|length == 3 %}
     <div class="hero-cards">
+        {% for user in staff_users %}
         <div class="hero-card">
             <div class="artist-desc">
                 <div class="artist-info">
-                    <h4 class="artist-name">Randy George</h4>
+                    <a href="{% url 'collection:user_collections' user.username %}">
+                        <h4 class="artist-name">{{ user.fullname }}</h4>
+                    </a>
                     <div class="verified-icon">
                         <i class="star-icon"></i>
                         <i class="fa-solid fa-check check-icon"></i>
@@ -38,40 +42,14 @@
                 <p class="artist-subinfo">Art Director</p>
             </div>
             <div class="artist-image">
-                <img src="/static/img/image2.jpeg" alt="">
+                <a href="{% url 'collection:user_collections' user.username %}">
+                    <img src="{{ user.nfts.first.image.url }}" alt="no user nft">
+                </a>
             </div>
         </div>
-        <div class="hero-card">
-            <div class="artist-desc">
-                <div class="artist-info">
-                    <h4 class="artist-name">Zain Lubin</h4>
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-                <p class="artist-subinfo">Art Director</p>
-            </div>
-            <div class="artist-image">
-                <img src="/static/img/image1.jpeg" alt="">
-            </div>
-        </div>
-        <div class="hero-card">
-            <div class="artist-desc">
-                <div class="artist-info">
-                    <h4 class="artist-name">Jakob George</h4>
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-                <p class="artist-subinfo">Art Director</p>
-            </div>
-            <div class="artist-image">
-                <img src="/static/img/image3.jpeg" alt="">
-            </div>
-        </div>
+        {% endfor %}
     </div>
+    {% endif %}
 </section>
 
 <section class="roadmap-section">
@@ -81,7 +59,7 @@
                 <h2 class="section-title">Road-Map</h2>
                 <p class="section-desc">
                     This is our roadmap so far, but this is only the begining, we want to
-                    build our project <br> around our community, so if you have more ideas we are all ears.
+                    build our project around our community, so if you have more ideas we are all ears.
                 </p>
             </div>
             <div class="roadmap-phases">
@@ -136,7 +114,7 @@
                         <div class="auction-details">
                             <div class="auction-detail">
                                 <p class="auction-text-grey">Current bid</p>
-                                <h4 class="auction-text-black eth">{{ auction.price }}</h4>
+                                <h4 class="auction-text-black eth">{{ auction.price }} {{ auction.currency.symbol }}</h4>
                                 <p class="auction-text-grey usd"></p>
                             </div>
                             <div class="auction-detail">

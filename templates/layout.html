@@ -32,10 +32,6 @@
                     <li class="nav-item"><a href="{% url 'home:faq' %}" class="nav-link">FAQ</a></li>
                 </ul>
                 <div class="nav-buttons">
-                    <div id="theme-toggle">
-                        <i class="fa-solid fa-moon"></i>
-                    </div>
-                    
                     {% if request.user.is_authenticated %}
                         <a class="nav-button" href="{% url 'collection:nft_create' %}"><button class="btn-green">Create</button></a>
                         <div class="avatar nav-button">
@@ -59,9 +55,8 @@
             </div>
             <div class="nav-menu" id="nav-menu">
                 <div class="nav-menu-buttons">
-                    
                     {% if request.user.is_authenticated %}
-                        <div class="avatar nav-button">
+                        <div class="avatar">
                             <a href="{% url 'collection:user_collections' request.user.username %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
                             <div class="avatar-icons">
                                 <div class="verified-icon">
@@ -74,7 +69,6 @@
                     {% else %}
                         <a href="{% url 'user:login' %}?next={{ request.path }}"><i class="fa-solid fa-user"></i></a>
                     {% endif %}
-
                 </div>
                 <ul class="nav-menu-links">
                     <li class="nav-item"><a href="{% url 'collection:list' %}" class="nav-link">Collection</a></li>
@@ -123,6 +117,11 @@
                         <li><a href="#"><i class="fa-brands fa-discord"></i></a></li>
                         <li><a href="#"><i class="fa-brands fa-twitter"></i></a></li>
                         <li><a href="#"><i class="fa-brands fa-facebook"></i></a></li>
+                        <li>
+                            <div id="theme-toggle">
+                                <i class="fa-solid fa-moon"></i>
+                            </div>
+                        </li>
                     </ul>
                     <div class="footer-rights">
                         <p>2024. all right Reserved.</p>

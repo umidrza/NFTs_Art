@@ -1,0 +1,52 @@
+{% for collection in page_obj %}
+    <div class="collection-card">
+        <div class="collection-card-desc">
+            <div class="collection-card-title">
+                <a href="{% url 'collection:detail' collection.id %}" class="collection-card-name">
+                    {{ collection.name }}
+                </a>
+                <p class="collection-card-creator">@{{ collection.creator.username }}</p>
+            </div>
+            <div class="collection-card-detail">
+                <div class="collection-creator-stats">
+                    <div class="collection-creator-stat">
+                        <p>Collections</p>
+                        <h5>{{ collection.creator.collections.count }}</h5>
+                    </div>
+                    <div class="collection-creator-stat">
+                        <p>Followers</p>
+                        <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
+                    </div>
+                </div>
+                {% if request.user == collection.creator %}
+                    <a href="{% url 'collection:update' collection.id %}"><button class="btn-outline-green collection-card-btn">Update</button></a>
+                {% elif collection.creator in following %}
+                    <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
+                {% else %}
+                    <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
+                {% endif %}
+            </div>
+        </div>
+        {% if collection.nfts.exists %}
+        <div class="collection-card-images">
+            {% for nft in collection.nfts.all %}
+                {% if forloop.counter <= 3 %}
+                    <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
+                        <img src="{{ nft.image.url }}">
+                    </a>
+                {% endif %}
+            {% endfor %}
+            {% if collection.nfts.count > 3 %}
+                <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
+                    <img src="{{ collection.nfts.all.3.image.url }}">
+                    {% if collection.nfts.count > 4 %}
+                        <p class="collection-more-image">+{{ collection.nfts.count|add:'-4' }}</p>
+                    {% endif %}
+                </a>
+            {% endif %}
+        </div> 
+        {% else %}
+            <div class="no-images">No nfts</div>
+        {% endif %}
+    </div>
+{% endfor %}

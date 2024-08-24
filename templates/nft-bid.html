@@ -65,3 +65,14 @@
 
 {% endblock main %}
 
+{% block scripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const expirationInput = document.getElementById('expiration');
+        const today = new Date().toISOString().split('T')[0];
+        expirationInput.setAttribute('min', today);
+    });
+</script>
+
+{% endblock scripts %}

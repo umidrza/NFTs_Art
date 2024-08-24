@@ -66,22 +66,22 @@
                         <div class="collection-filter-items dropdown-content opened">
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="status-auction" >On Auction</label>
-                                <input class="collection-filter-checkbox hidden" id="status-auction" type="checkbox" name="status" value="auction">
+                                <input class="collection-filter-checkbox hidden" id="status-auction" type="checkbox" name="status" value="auction" {% if 'auction' in status_filters %}checked{% endif %}>
                                 <label class="filter-check-icon" for="status-auction"><i class="fa-solid fa-check check-icon"></i></label>
                             </div>
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="status-not-started">Not started</label>
-                                <input class="collection-filter-checkbox hidden" id="status-not-started" type="checkbox" name="status" value="not-started">
+                                <input class="collection-filter-checkbox hidden" id="status-not-started" type="checkbox" name="status" value="not-started" {% if 'not-started' in status_filters %}checked{% endif %}>
                                 <label class="filter-check-icon" for="status-not-started"><i class="fa-solid fa-check check-icon"></i></label>
                             </div>
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="status-expired" >Expired</label>
-                                <input class="collection-filter-checkbox hidden" id="status-expired" type="checkbox" name="status" value="expired">
+                                <input class="collection-filter-checkbox hidden" id="status-expired" type="checkbox" name="status" value="expired" {% if 'expired' in status_filters %}checked{% endif %}>
                                 <label class="filter-check-icon" for="status-expired"><i class="fa-solid fa-check check-icon"></i></label>
                             </div>
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="status-not-on-sale">Not on sale</label>
-                                <input class="collection-filter-checkbox hidden" id="status-not-on-sale" type="checkbox" name="status" value="not-on-sale">
+                                <input class="collection-filter-checkbox hidden" id="status-not-on-sale" type="checkbox" name="status" value="not-on-sale" {% if 'not-on-sale' in status_filters %}checked{% endif %}>
                                 <label class="filter-check-icon" for="status-not-on-sale"><i class="fa-solid fa-check check-icon"></i></label>
                             </div>
                         </div>
@@ -93,9 +93,9 @@
                         </div>
                         <div class="dropdown-content opened">
                             <div class="collection-filter-items-fd-row">
-                                <input type="number" class="filter-input" placeholder="Min" id="min-value">
+                                <input type="number" class="filter-input" placeholder="Min" id="min-value" name="min-value" {% if min_value %}value="{{ min_value }}"{% endif %}>
                                 <p class="filter-input-text">To</p>
-                                <input type="number" class="filter-input" placeholder="Max" id="max-value">
+                                <input type="number" class="filter-input" placeholder="Max" id="max-value" name="max-value" {% if max_value %}value="{{ max_value }}"{% endif %}>
                             </div>
                         </div>
                     </div>
@@ -107,13 +107,13 @@
                         <div class="collection-filter-items dropdown-content opened">
                             <div class="collection-filter-item">
                                 <label class="collection-filter-item-text" for="currency-all">Show all</label>
-                                <input class="collection-filter-radio hidden" id="currency-all" type="radio" name="currency" value="all" checked>
+                                <input class="collection-filter-radio hidden" id="currency-all" type="radio" name="currency" value="all" {% if currency_filter == 'all' %}checked{% endif %}>
                                 <label class="filter-check-icon" for="currency-all"><i class="radio-icon"></i></label>
                             </div>
                             {% for currency in currencies %}
                                 <div class="collection-filter-item">
                                     <label class="collection-filter-item-text currency-text" for="currency-{{ currency.symbol }}">{{ currency.symbol }}</label>
-                                    <input class="collection-filter-radio hidden" id="currency-{{ currency.symbol }}" type="radio" name="currency" value="{{ currency.symbol }}">
+                                    <input class="collection-filter-radio hidden" id="currency-{{ currency.symbol }}" type="radio" name="currency" value="{{ currency.symbol }}" {% if currency_filter == currency.symbol %}checked{% endif %}>
                                     <label class="filter-check-icon" for="currency-{{ currency.symbol }}"><i class="radio-icon"></i></label>
                                 </div>
                             {% endfor %}
@@ -124,17 +124,17 @@
             <div class="collection-cards-pagination">
                 <div class="collection-search">
                     <div class="collection-search-input">
-                        <input type="text" class="search-input" placeholder="Search collections" id="nft-search">
+                        <input type="text" class="search-input" placeholder="Search collections" id="nft-search"  name="search" value="{{ search_query }}">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <i class="fa-solid fa-xmark remove-search-btn hidden"></i>
                     </div>
                     <div class="collection-select-filter">
                         <select id="sort-by" class="filter-select">
                             <option value="default">Sort By</option>
-                            <option value="price-asc">Price: Low to High</option>
-                            <option value="price-desc">Price: High to Low</option>
-                            <option value="name-asc">Name: A to Z</option>
-                            <option value="name-desc">Name: Z to A</option>
+                            <option value="price-asc" {% if sort_by == 'price-asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price-desc" {% if sort_by == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="name-asc" {% if sort_by == 'name-asc' %}selected{% endif %}>Name: A to Z</option>
+                            <option value="name-desc" {% if sort_by == 'name-desc' %}selected{% endif %}>Name: Z to A</option>
                         </select>
                     </div>
                     <div class="collection-grid-switches">
@@ -171,60 +171,7 @@
                     </div>
                 </div>
                 <div class="collection-nft-cards">
-                    {% for nft in page_obj %}
-                        <div class="nft-card" data-status="{{ nft.get_status }}" 
-                            data-currency="{% if nft.auctions %}{{ nft.auctions.first.currency.symbol }}{% endif %}" 
-                            data-price="{% if nft.auctions %}{{ nft.auctions.first.price }}{% endif %}">
-
-                            {% if collection %}
-                                <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
-                                    <h4 class="nft-name">{{ nft.name }}</h4>
-                                </a>
-                                <a href="{% url 'collection:collection_nft_detail' collection.id nft.id %}">
-                                    <div class="nft-card-image">
-                                        <img src="{{ nft.image.url }}" class="nft-image">
-                                    </div>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'collection:nft_detail' nft.id %}">
-                                    <h4 class="nft-name">{{ nft.name }}</h4>
-                                </a>
-                                <a href="{% url 'collection:nft_detail' nft.id %}">
-                                    <div class="nft-card-image">
-                                        <img src="{{ nft.image.url }}" class="nft-image">
-                                    </div>
-                                </a>
-                            {% endif %}
-                            <div class="nft-detail">
-                                {% if nft.get_status == 'auction' %}
-                                    <div class="nft-status">
-                                        <p>Highest bid</p>
-                                        <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
-                                    </div>
-                                    <div class="nft-time">
-                                        <span class="countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></span>
-                                    </div>
-                                {% elif nft.get_status == 'expired' %}
-                                    <div class="nft-status">
-                                        <p>Highest bid</p>
-                                        <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
-                                    </div>
-                                    <div class="nft-time">
-                                        <span class="expired">Expired</span>
-                                    </div>
-                                {% elif nft.get_status == 'not-started' %}
-                                    <div class="nft-status nft-status-not-sale">
-                                        <h4>Not Started</h4>
-                                        <p>Starts at: {{ nft.auctions.first.start_time|date:"M d, Y" }}</p>
-                                    </div>
-                                {% else %}
-                                    <div class="nft-status nft-status-not-sale">
-                                        <h4>Not on sale</h4>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
+                    {% include "partials/nft-cards.html" %}
                 </div>
                 {% if paginator.num_pages > 1 %}
                 <div class="collection-pagination">
@@ -507,33 +454,107 @@
 
 {% block scripts %}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $('.follow-btn').click(function(){
-            const userId = $(this).data('user-id');
-            const button = $(this);
-            const followersCountElement = button.closest('.collection-creator-detail').find('.creator-followers-count');
-            let followersCount = parseInt(followersCountElement.text());
-            let url = '{% url "user:follow" 0 %}';
-            url = url.replace('0', userId);
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.follow-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                const followersCountElement = button.closest('.collection-creator-detail').querySelector('.creator-followers-count');
+                let url = '{% url "user:follow" 0 %}'.replace('0', userId);
 
-            $.ajax({
-                url: url,
-                method: 'POST',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                success: function(data) {
-                    if (data.status == 'followed') {
-                        button.removeClass('btn-green').addClass('btn-outline-green').text('Following');
-                        button.closest('.collection-creator-detail').find('.creator-followers-count').text(followersCount + 1);
-                    } else if (data.status == 'unfollowed') {
-                        button.removeClass('btn-outline-green').addClass('btn-green').text('Follow');
-                        button.closest('.collection-creator-detail').find('.creator-followers-count').text(followersCount - 1);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
                     }
-                },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'followed') {
+                        button.classList.remove('btn-green');
+                        button.classList.add('btn-outline-green');
+                        button.textContent = 'Following';
+                    } else if (data.status === 'unfollowed') {
+                        button.classList.remove('btn-outline-green');
+                        button.classList.add('btn-green');
+                        button.textContent = 'Follow';
+                    }
+                    followersCountElement.textContent = data.follower_count;
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
     });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function applyFilters() {
+            const search = document.getElementById('nft-search').value;
+            const sort_by = document.getElementById('sort-by').value;
+            const statuses = Array.from(document.querySelectorAll('input[name="status"]:checked')).map(checkbox => checkbox.value);
+            const currency = document.querySelector('input[name="currency"]:checked').value;
+            const minValue = document.getElementById('min-value').value;
+            const maxValue = document.getElementById('max-value').value;
+            const params = new URLSearchParams();
+
+            if (search) params.append('search', search);
+            if (currency && currency !== 'all') params.append('currency', currency);
+            if (minValue) params.append('min', minValue);
+            if (maxValue) params.append('max', maxValue);
+            if (sort_by && sort_by !== 'default') params.append('sort_by', sort_by);
+            statuses.forEach(status => params.append('status', status));
+
+            const url = '?' + params.toString();
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.collection-nft-cards').innerHTML = data.html;
+
+                document.querySelectorAll('.countdown').forEach(countdownElement => {
+                    const endTime = new Date(countdownElement.getAttribute('data-date')).getTime();
+                    const now = new Date().getTime();
+                    const timeDifference = endTime - now;
+            
+                    if (timeDifference > 0) {
+                        const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+            
+                        if (countdownElement.classList.contains('days')){
+                            countdownString = `${days} days`;
+                        }
+                        else{
+                            countdownString = `${days.toString().padStart(2, '0')}d : ${hours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m`;
+                        }
+                        countdownElement.textContent = countdownString;
+                        
+                    } else {
+                        countdownElement.textContent = 'Expired';
+                        countdownElement.classList.add('expired');
+                    }
+                }); 
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        document.getElementById('sort-by').addEventListener('change', applyFilters);
+        const statusCheckboxes = document.querySelectorAll('input[name="status"]');
+        statusCheckboxes.forEach(checkbox => checkbox.addEventListener('change', applyFilters));
+        const currencyCheckboxes = document.querySelectorAll('input[name="currency"]');
+        currencyCheckboxes.forEach(checkbox => checkbox.addEventListener('change', applyFilters));
+        document.getElementById('nft-search').addEventListener('keyup', applyFilters);
+        document.getElementById('min-value').addEventListener('keyup', applyFilters);
+        document.getElementById('max-value').addEventListener('keyup', applyFilters);
+    });
+</script>  
+
+
 
 {% endblock scripts %}

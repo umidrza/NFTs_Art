@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 
 
 def collections_list(request, username=None):
@@ -19,12 +20,37 @@ def collections_list(request, username=None):
         collections = Collection.objects.all()
         title = 'Get Popular Collection'
     
-    paginator = Paginator(collections, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
     categories = Category.objects.all()
     blockchains = Blockchain.objects.all()
     following = User.objects.filter(followers__follower=request.user) if request.user.is_authenticated else User.objects.none()
+
+    search_query = request.GET.get('search', '')
+    blockchain_filter = request.GET.get('blockchain', 'all')
+    category_filter = request.GET.getlist('category')
+    sort_by = request.GET.get('sort_by', 'default')
+
+    if search_query:
+        collections = collections.filter(name__icontains=search_query)
+
+    if blockchain_filter != 'all' and blockchain_filter.isdigit():
+        collections = collections.filter(blockchain__id=blockchain_filter)
+
+    if category_filter:
+        collections = collections.filter(category__id__in=category_filter)
+
+    if sort_by == 'name-asc':
+        collections = collections.order_by('name')
+    elif sort_by == 'name-desc':
+        collections = collections.order_by('-name')
+
+
+    paginator = Paginator(collections, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('partials/collection-cards.html', {'page_obj': page_obj})
+        return JsonResponse({'html': html})
 
     context = {
         'categories': categories,
@@ -33,20 +59,66 @@ def collections_list(request, username=None):
         'title': title,
         'page_obj': page_obj,
         'paginator': paginator,
+        'search_query': search_query,
+        'blockchain_filter': blockchain_filter,
+        'category_filter': category_filter,
+        'sort_by': sort_by,
     }
 
     return render(request, 'collections.html', context)
 
 
-def collection_detail(request, id): 
-    collection = get_object_or_404(Collection, id=id)
-    collector = collection.creator
+def collection_detail(request, id=None, username=None): 
+    if id:
+        collection = get_object_or_404(Collection, id=id)
+        collector = collection.creator
+        nfts = collection.nfts.prefetch_related('auctions').all()
+    elif username:
+        collector = get_object_or_404(User, username=username)
+        nfts = NFT.objects.filter(collectors=collector)
+        collection = None
+    
     currencies = Currency.objects.all()
     following = Follow.objects.filter(follower=request.user, following=collector).exists() if request.user.is_authenticated else False
-    nfts = collection.nfts.prefetch_related('auctions').all()
+    
+    status_filters = request.GET.getlist('status')
+    min_value = request.GET.get('min')
+    max_value = request.GET.get('max')
+    currency_filter = request.GET.get('currency', 'all')
+    search_query = request.GET.get('search', '')
+    sort_by = request.GET.get('sort_by', 'default')
+
+    if min_value or max_value or currency_filter != 'all':
+        nfts = nfts.filter(auctions__isnull=False)
+        if min_value:
+            nfts = nfts.filter(auctions__price__gte=min_value)
+        if max_value:
+            nfts = nfts.filter(auctions__price__lte=max_value)
+        if currency_filter != 'all':
+            nfts = nfts.filter(auctions__currency__symbol=currency_filter)
+
+    if search_query:
+        nfts = nfts.filter(name__icontains=search_query)
+    
+    if sort_by == 'price-asc':
+        nfts = nfts.filter(auctions__isnull=False).order_by('auctions__price')
+    elif sort_by == 'price-desc':
+        nfts = nfts.filter(auctions__isnull=False).order_by('-auctions__price')
+    elif sort_by == 'name-asc':
+        nfts = nfts.order_by('name')
+    elif sort_by == 'name-desc':
+        nfts = nfts.order_by('-name')
+
+    if status_filters:
+        nfts = [nft for nft in nfts if nft.get_status() in status_filters]
+
     paginator = Paginator(nfts, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('partials/nft-cards.html', {'page_obj': page_obj})
+        return JsonResponse({'html': html})
     
     context = {
         'collection': collection,
@@ -55,6 +127,12 @@ def collection_detail(request, id):
         'following': following,
         'page_obj': page_obj,
         'paginator': paginator,
+        'status_filters': status_filters,
+        'min_value': min_value,
+        'max_value': max_value,
+        'currency_filter': currency_filter,
+        'search_query': search_query,
+        'sort_by': sort_by
     }
     return render(request, 'collection-detail.html', context)
 
@@ -114,7 +192,10 @@ def nft_detail(request, nft_id, collection_id=None, auction_id = None):
     auction = get_object_or_404(Auction, id=auction_id) if auction_id else nft.auctions.first()
     liked = Like.objects.filter(nft=nft, user=request.user).exists() if request.user.is_authenticated else False
     status = nft.get_status(auction)
-
+    bids = Bid.objects.filter(auction=auction).order_by('timestamp') if auction else None
+    bid_amounts = [float(bid.amount) for bid in bids] if bids else []
+    bid_timestamps = [bid.timestamp.isoformat() for bid in bids] if bids else []
+    
     context = {
         'nft': nft,
         'collection': collection,
@@ -122,28 +203,11 @@ def nft_detail(request, nft_id, collection_id=None, auction_id = None):
         'auction': auction,
         'status': status,
         'liked': liked,
+        'bids': bids,
+        'bid_amounts': bid_amounts,
+        'bid_timestamps': bid_timestamps,
     }
     return render(request, 'nft-detail.html', context)
-
-
-@login_required
-def user_nfts(request, username):
-    collector = get_object_or_404(User, username=username)
-    currencies = Currency.objects.all()
-    nfts = NFT.objects.filter(collectors=collector)
-
-    paginator = Paginator(nfts, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        'page_obj': page_obj,
-        'paginator': paginator,
-        'collector': collector,
-        'currencies': currencies,
-    }
-
-    return render(request, 'collection-detail.html', context)
 
 
 @login_required
@@ -197,7 +261,6 @@ def auction_create(request, nft_id):
     }
 
     return render(request, 'nft-sell.html', context)
-
 
 
 @login_required

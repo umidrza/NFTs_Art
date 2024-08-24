@@ -10,6 +10,7 @@
     --background-color-white: #FEFEFE;
     --light-cyan: #52B4C1;
     --light-green: #DCF06B;
+    --light-red: #EB3F5E;
     --neutral-1: #11315B;
     --neutral-2: #6E84AB;
     --neutral-3: #21204A;
@@ -39,7 +40,7 @@
     --text-secondary-color: #FEFEFE;
     --grayscale-30-90: #434E58;
     --grayscale-0-90: #444444;
-    --grayscale-10-95: #0b0b11;
+    --grayscale-10-95: #07070a;
     --line-color: #4A4A65;
     --neutral-1: #6E84AB;
     --neutral-3: #3e3ea0;
@@ -88,7 +89,6 @@ body:has(header) {
     text-align: center;
     font-size: 16px;
     font-weight: 400;
-    line-height: 24px;
     letter-spacing: 0.08px;
 }
 
@@ -105,7 +105,7 @@ body:has(header) {
     line-height: 24px;
     letter-spacing: 0.08px;
     cursor: pointer;
-    border: none;
+    border: 1px solid transparent;
     transition: 300ms;
     min-width: fit-content;
     overflow: hidden;
@@ -124,9 +124,27 @@ body:has(header) {
     color: var(--text-primary-color);
 }
 
+.btn-green:hover{
+    background-color: transparent;
+    border-color: var(--light-green);
+    color: var(--text-primary-color);
+}
+
+.btn-outline-green:hover{
+    background-color: var(--light-green);
+    color: var(--text-color-black-1);
+    border-color: transparent;
+}
+
 .delete-btn{
-    background-color: #EB3F5E;
+    background-color: var(--light-red);
     color: white;
+}
+
+.delete-btn:hover{
+    color: var(--light-red);
+    border-color: var(--light-red);
+    background-color: transparent;
 }
 
 .btn-green:disabled,
@@ -269,6 +287,11 @@ header {
     font-weight: 600;
     line-height: 26px;
     letter-spacing: 0.5px;
+    transition: 300ms;
+}
+
+.nav-link:hover{
+    color: var(--light-cyan);
 }
 
 .nav-buttons {
@@ -346,18 +369,13 @@ header .avatar-icons {
 }
 
 #theme-toggle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 20px;
     transition: 300ms;
     cursor: pointer;
 }
 
 #theme-toggle:hover {
-    background-color: var(--grayscale-30-90);
+    color: var(--light-cyan);
 }
 
 
@@ -411,6 +429,7 @@ footer {
     font-weight: 600;
     line-height: 26px;
     letter-spacing: 0.5px;
+    transition: 300ms;
 }
 
 .footer-menu {
@@ -426,6 +445,15 @@ footer {
     align-items: center;
     gap: 12px;
     color: var(--text-primary-color);
+}
+
+.footer-social li a {
+    transition: 300ms;
+}
+
+.footer-link:hover,
+.footer-social li a:hover {
+    color: var(--light-cyan);
 }
 
 .footer-rights p {
@@ -645,6 +673,8 @@ footer {
 }
 
 .roadmap .section-desc {
+    width: 60%;
+    margin: 0 auto;
     color: rgba(254, 254, 254, 0.72);
 }
 
@@ -1120,10 +1150,11 @@ footer {
 
 .price-history-chart .prices {
     display: flex;
-    width: 20px;
+    width: fit-content;
     flex-direction: column;
     align-items: flex-end;
     gap: 24px;
+    text-align: right;
 }
 
 .chart-text {
@@ -1137,7 +1168,7 @@ footer {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    padding: 0 30px;
+    padding: 0 10px 0 40px;
     max-width: 650px;
 }
 
@@ -1150,7 +1181,7 @@ footer {
     gap: 40px;
     position: absolute;
     top: 5px;
-    left: 30px;
+    left: 40px;
 }
 
 .price-history-chart .line {
@@ -1166,8 +1197,8 @@ footer {
     width: 90%;
     max-width: 650px;
     position: absolute;
-    top: 50%;
-    left: 30px;
+    top: 45%;
+    left: 40px;
     transform: translateY(-50%);
 }
 
@@ -1249,6 +1280,7 @@ tr.spacing td {
 /* 
  * POPULAR COLLECTIONS
  */
+
 .popular-collections-section {
     padding: 120px 0;
 }
@@ -1479,6 +1511,7 @@ tr.spacing td {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    cursor: pointer;
 }
 
 .faq-question h4 {
@@ -1652,6 +1685,7 @@ tr.spacing td {
     width: 70px;
     height: 70px;
     flex-shrink: 0;
+    cursor: pointer;
 }
 
 .collection-creator-desc {
@@ -1679,6 +1713,7 @@ tr.spacing td {
     font-weight: 700;
     line-height: 28px;
     letter-spacing: 0.1px;
+    cursor: pointer;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -1832,18 +1867,18 @@ tr.spacing td {
     flex-shrink: 0;
     border-radius: 50%;
     transition: 200ms;
-    background: #52B4C1;
+    background: var(--light-cyan);
     position: absolute;
     opacity: 0;
 }
 
 .collection-filter-checkbox:checked+.filter-check-icon {
-    background: #52B4C1;
+    background: var(--light-cyan);
     border: none;
 }
 
 .collection-filter-radio:checked+.filter-check-icon {
-    border: 1px solid #52B4C1;
+    border: 1px solid var(--light-cyan);
 }
 
 .collection-filter-radio:checked+.filter-check-icon .radio-icon,
@@ -1929,7 +1964,7 @@ tr.spacing td {
 
 .search-input {
     display: flex;
-    padding: 12px 40px;
+    padding: 12px 12px 12px 40px;
     align-items: center;
     flex: 1 0 0;
     border-radius: 16px;
@@ -1993,7 +2028,7 @@ tr.spacing td {
 }
 
 .grid-switch input:checked+label {
-    background: #DCF06B;
+    background: var(--light-green);
     border-radius: 12px;
 }
 
@@ -2072,12 +2107,18 @@ tr.spacing td {
     width: 100%;
 }
 
+.collection-card-name:hover, 
+.collection-creator-fullname:hover{
+    color: var(--neutral-1);
+}
+
 .collection-card-creator {
     color: #9D9BB9;
     font-size: 12px;
     font-weight: 400;
     line-height: 16px;
     letter-spacing: 0.06px;
+    cursor: pointer;
 }
 
 .collection-card-detail {
@@ -2273,7 +2314,7 @@ tr.spacing td {
 }
 
 .nft-time:has(.expired){
-    background: #EB3F5E;
+    background: var(--light-red);
 }
 
 .nft-time span {
@@ -2523,7 +2564,7 @@ tr.spacing td {
 .form-textarea:focus,
 .form-textarea:valid,
 .form-select:focus {
-    border-color: #52B4C1;
+    border-color: var(--light-cyan);
 }
 
 .form-input-box .form-input:focus+.form-label,
@@ -2757,18 +2798,6 @@ input[type='number']::-webkit-outer-spin-button {
     gap: 8px;
 }
 
-#login-btn {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 24px;
-    color: var(--text-primary-color);
-    cursor: pointer;
-}
-
-#login-btn:hover {
-    text-decoration: underline;
-}
-
 .form-buttons{
     display: flex;
     flex-direction: column;
@@ -2781,19 +2810,12 @@ input[type='number']::-webkit-outer-spin-button {
 
 .form-warning {
     text-align: left;
-    /* color: #FFCD1A; */
-    color: #EB3F5E;
+    color: var(--light-red);
     font-size: 16px;
     font-weight: 400;
     line-height: 20px;
     letter-spacing: 0.16px;
 }
-
-.password-show-btn {
-    cursor: pointer;
-}
-
-
 
 
 /* 
@@ -2928,6 +2950,9 @@ input[type='number']::-webkit-outer-spin-button {
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .popup-nft-link i {
@@ -3037,6 +3062,23 @@ input[type='number']::-webkit-outer-spin-button {
     width: 50px;
     height: 50px;
 }
+
+#login-btn {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    color: var(--text-primary-color);
+    cursor: pointer;
+}
+
+#login-btn:hover {
+    text-decoration: underline;
+}
+
+.password-show-btn {
+    cursor: pointer;
+}
+
 
 
 /* 
@@ -3186,7 +3228,7 @@ body:has(.notfound-section) {
     align-items: center;
     gap: 8px;
     border-radius: 16px;
-    background: #52B4C1;
+    background: var(--light-cyan);
     color: var(--background-color-white);
     font-size: 14px;
     font-weight: 600;
@@ -3305,7 +3347,7 @@ body:has(.notfound-section) {
 
 .connect-wallet-tab input:checked+.connect-wallet-tab-text {
     color: var(--neutral-1);
-    border-bottom: 1px solid #52B4C1;
+    border-bottom: 1px solid var(--light-cyan);
 }
 
 .connect-wallet-list {
@@ -3378,6 +3420,7 @@ body:has(.notfound-section) {
     display: flex;
     align-items: center;
     gap: 12px;
+    margin: 0 auto;
 }
 
 .popup-wallet-desc {
@@ -3407,7 +3450,7 @@ body:has(.notfound-section) {
     justify-content: center;
     align-items: center;
     border-radius: 8px;
-    background: #52B4C1;
+    background: var(--light-cyan);
     color: var(--Background-04, #FFF);
     text-align: center;
     font-family: "Poppins", sans-serif;
@@ -3438,7 +3481,7 @@ body:has(.notfound-section) {
 }
 
 .popup-subheader-desc .show-more {
-    color: #52B4C1;
+    color: var(--light-cyan);
 }
 
 
@@ -3484,7 +3527,7 @@ body:has(.notfound-section) {
 }
 
 .alert-error {
-    background-color: #EB3F5E;
+    background-color: var(--light-red);
     color: white;
 }
 

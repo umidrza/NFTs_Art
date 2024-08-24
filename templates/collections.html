@@ -15,21 +15,21 @@
             <div class="nft-collections-container">
                 <div class="collection-search">
                     <div class="collection-search-input">
-                        <input type="text" class="search-input" placeholder="Search collections" id="collection-search">
+                        <input type="text" class="search-input" placeholder="Search collections" id="collection-search"  name="search" value="{{ search_query }}">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <i class="fa-solid fa-xmark remove-search-btn hidden"></i>
                     </div>
                     <div class="collection-select-filter">
                         <select name="blockchains" id="blockchains" class="filter-select">
-                            <option value="all">All blockchains</option>
+                            <option value="all" {% if blockchain_filter == 'all' %}selected{% endif %}>All blockchains</option>
                             {% for blockchain in blockchains %}
-                                <option value="{{ blockchain.id }}">{{ blockchain.name }}</option>
+                                <option value="{{ blockchain.id }}" {% if blockchain.id|stringformat:"s" == blockchain_filter %}selected{% endif %}>{{ blockchain.name }}</option>
                             {% endfor %}
                         </select>
                         <select id="sort-by-collection" class="filter-select">
                             <option value="default">Sort By</option>
-                            <option value="name-asc">Name: A to Z</option>
-                            <option value="name-desc">Name: Z to A</option>
+                            <option {% if 'name-asc' == sort_by %}selected{% endif %} value="name-asc">Name: A to Z</option>
+                            <option {% if 'name-desc' == sort_by %}selected{% endif %} value="name-desc">Name: Z to A</option>
                         </select>
                     </div>
                     <div class="collection-grid-switches">
@@ -69,7 +69,9 @@
                                 {% for category in categories %}
                                     <div class="collection-filter-item">
                                         <label class="collection-filter-item-text" for="category-{{ category.id }}">{{ category.name }}</label>
-                                        <input class="collection-filter-checkbox hidden" id="category-{{ category.id }}" type="checkbox" name="category" value="{{ category.id }}">
+                                        <input class="collection-filter-checkbox hidden" id="category-{{ category.id }}"
+                                            type="checkbox" name="category" value="{{ category.id }}"   
+                                            {% if category.id|stringformat:"s" in category_filter %} checked {% endif %}>
                                         <label class="filter-check-icon" for="category-{{ category.id }}">
                                             <i class="fa-solid fa-check check-icon"></i>
                                         </label>
@@ -82,59 +84,8 @@
                     {% if page_obj %}
                     <div class="collection-cards-pagination">
                         <div class="collection-cards">
-                            {% for collection in page_obj %}
-                                <div class="collection-card" data-category="{{ collection.category.id }}" data-blockchain="{{ collection.blockchain.id }}">
-                                    <div class="collection-card-desc">
-                                        <div class="collection-card-title">
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-name">
-                                                {{ collection.name }}
-                                            </a>
-                                            <p class="collection-card-creator">@{{ collection.creator.username }}</p>
-                                        </div>
-                                        <div class="collection-card-detail">
-                                            <div class="collection-creator-stats">
-                                                <div class="collection-creator-stat">
-                                                    <p>Collections</p>
-                                                    <h5>{{ collection.creator.collections.count }}</h5>
-                                                </div>
-                                                <div class="collection-creator-stat">
-                                                    <p>Followers</p>
-                                                    <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
-                                                </div>
-                                            </div>
-                                            {% if request.user == collection.creator %}
-                                                <a href="{% url 'collection:update' collection.id %}"><button class="btn-outline-green collection-card-btn">Update</button></a>
-                                            {% elif collection.creator in following %}
-                                                <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
-                                            {% else %}
-                                                <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% if collection.nfts.exists %}
-                                    <div class="collection-card-images">
-                                        {% for nft in collection.nfts.all %}
-                                            {% if forloop.counter <= 3 %}
-                                                <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                    <img src="{{ nft.image.url }}">
-                                                </a>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if collection.nfts.count > 3 %}
-                                            <a href="{% url 'collection:detail' collection.id %}" class="collection-card-image">
-                                                <img src="{{ collection.nfts.all.3.image.url }}">
-                                                {% if collection.nfts.count > 4 %}
-                                                    <p class="collection-more-image">+{{ collection.nfts.count|add:'-4' }}</p>
-                                                {% endif %}
-                                            </a>
-                                        {% endif %}
-                                    </div> 
-                                    {% else %}
-                                        <div class="no-images">No nfts</div>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
+                            {% include 'partials/collection-cards.html' %}
+                        </div> 
                         {% if paginator.num_pages > 1 %}
                         <div class="collection-pagination">
                             {% if page_obj.has_previous %}
@@ -418,31 +369,79 @@
 
 {% block scripts %}
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function(){
-        $('.follow-btn').click(function(){
-            const userId = $(this).data('user-id');
-            const button = $(this);
-            const followersCountElement = button.closest('.collection-card-detail').find('.creator-followers-count');
-            let followersCount = parseInt(followersCountElement.text());
-            let url = '{% url "user:follow" 0 %}';
-            url = url.replace('0', userId);
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.follow-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                let url = '{% url "user:follow" 0 %}';
+                url = url.replace('0', userId);
 
-            $.ajax({
-                url: url,
-                method: 'POST',
-                headers: {'X-CSRFToken': '{{ csrf_token }}'},
-                success: function(data) {
-                    if (data.status == 'followed') {
-                        button.removeClass('btn-green').addClass('btn-outline-green').text('Following');
-                    } else if (data.status == 'unfollowed') {
-                        button.removeClass('btn-outline-green').addClass('btn-green').text('Follow');
-                    }
-                    button.closest('.collection-card-detail').find('.creator-followers-count').text(data.follower_count);
-                }
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelectorAll('.follow-btn').forEach(btn => {
+                        if (btn.getAttribute('data-user-id') == userId) {
+                            if (data.status == 'followed'){
+                                btn.classList.remove('btn-green');
+                                btn.classList.add('btn-outline-green');
+                                btn.textContent = 'Following';
+                            }
+                            else if (data.status === 'unfollowed') {
+                                btn.classList.remove('btn-outline-green');
+                                btn.classList.add('btn-green');
+                                btn.textContent = 'Follow';
+                            }
+                            const followersCountElement = btn.closest('.collection-card-detail').querySelector('.creator-followers-count');
+                            followersCountElement.textContent = data.follower_count;
+                        }
+                    });
+                });
             });
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function applyFilters() {
+            const search = document.getElementById('collection-search').value;
+            const blockchain = document.getElementById('blockchains').value;
+            const categories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
+            const sort_by = document.getElementById('sort-by-collection').value;
+            const params = new URLSearchParams();
+
+            if (search) params.append('search', search);
+            if (blockchain && blockchain !== 'all') params.append('blockchain', blockchain);
+            if (sort_by && sort_by !== 'default') params.append('sort_by', sort_by);
+            categories.forEach(category => params.append('category', category));
+    
+            const url = '?' + params.toString();
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.collection-cards').innerHTML = data.html;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    
+        document.getElementById('blockchains').addEventListener('change', applyFilters);
+        document.getElementById('sort-by-collection').addEventListener('change', applyFilters);
+        document.getElementById('collection-search').addEventListener('keyup', applyFilters);
+        const categoryCheckboxes = document.querySelectorAll('.collection-filter-checkbox');
+        categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', applyFilters));
     });
 </script>
 

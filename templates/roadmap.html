@@ -6,12 +6,14 @@
 
 {% block main %}
 
+{% if staff_users|length == 3 %}
 <section class="hero-cards-section">
     <div class="hero-cards">
+        {% for user in staff_users %}
         <div class="hero-card">
             <div class="artist-desc">
                 <div class="artist-info">
-                    <h4 class="artist-name">Randy George</h4>
+                    <h4 class="artist-name">{{ user.fullname }}</h4>
                     <div class="verified-icon">
                         <i class="star-icon"></i>
                         <i class="fa-solid fa-check check-icon"></i>
@@ -20,41 +22,13 @@
                 <p class="artist-subinfo">Art Director</p>
             </div>
             <div class="artist-image">
-                <img src="/static/img/image2.jpeg" alt="">
+                <img src="{{ user.nfts.first.image.url }}" alt="no user nft">
             </div>
         </div>
-        <div class="hero-card">
-            <div class="artist-desc">
-                <div class="artist-info">
-                    <h4 class="artist-name">Zain Lubin</h4>
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-                <p class="artist-subinfo">Art Director</p>
-            </div>
-            <div class="artist-image">
-                <img src="/static/img/image1.jpeg" alt="">
-            </div>
-        </div>
-        <div class="hero-card">
-            <div class="artist-desc">
-                <div class="artist-info">
-                    <h4 class="artist-name">Jakob George</h4>
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-                <p class="artist-subinfo">Art Director</p>
-            </div>
-            <div class="artist-image">
-                <img src="/static/img/image3.jpeg" alt="">
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </section>
+{% endif %}
 
 <section class="roadmap-section">
     <div class="container">

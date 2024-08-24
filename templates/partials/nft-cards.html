@@ -1,0 +1,48 @@
+{% for nft in page_obj %}
+    <div class="nft-card">
+        <a  {% if collection %}
+                href="{% url 'collection:collection_nft_detail' collection.id nft.id %}"
+            {% else %}
+                href="{% url 'collection:nft_detail' nft.id %}"
+            {% endif %}>
+            <h4 class="nft-name">{{ nft.name }}</h4>
+        </a>
+        <a  {% if collection %}
+                href="{% url 'collection:collection_nft_detail' collection.id nft.id %}"
+            {% else %}
+                href="{% url 'collection:nft_detail' nft.id %}"
+            {% endif %}>
+            <div class="nft-card-image">
+                <img src="{{ nft.image.url }}" class="nft-image">
+            </div>
+        </a>
+        <div class="nft-detail">
+            {% if nft.get_status == 'auction' %}
+                <div class="nft-status">
+                    <p>Highest bid</p>
+                    <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
+                </div>
+                <div class="nft-time">
+                    <span class="countdown" data-date="{{ nft.auctions.first.end_time|date:'c' }}"></span>
+                </div>
+            {% elif nft.get_status == 'expired' %}
+                <div class="nft-status">
+                    <p>Highest bid</p>
+                    <h4 class="nft-price">{{ nft.auctions.first.price }} {{ nft.auctions.first.currency.symbol }}</h4>
+                </div>
+                <div class="nft-time">
+                    <span class="expired">Expired</span>
+                </div>
+            {% elif nft.get_status == 'not-started' %}
+                <div class="nft-status nft-status-not-sale">
+                    <h4>Not Started</h4>
+                    <p>Starts at: {{ nft.auctions.first.start_time|date:"M d, Y" }}</p>
+                </div>
+            {% else %}
+                <div class="nft-status nft-status-not-sale">
+                    <h4>Not on sale</h4>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
