@@ -18,12 +18,14 @@
                         <h5 class="creator-followers-count">{{ collection.creator.followers.count }}</h5>
                     </div>
                 </div>
+                {% if request.user.is_authenticated %}
                 {% if request.user == collection.creator %}
                     <a href="{% url 'collection:update' collection.id %}"><button class="btn-outline-green collection-card-btn">Update</button></a>
                 {% elif collection.creator in following %}
                     <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Following</button>
                 {% else %}
                     <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collection.creator.id }}">Follow</button>
+                {% endif %}
                 {% endif %}
             </div>
         </div>

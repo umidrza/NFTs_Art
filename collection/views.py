@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
+from django.db.models import Sum
 
 
 def collections_list(request, username=None):
@@ -19,6 +20,17 @@ def collections_list(request, username=None):
     else:
         collections = Collection.objects.all()
         title = 'Get Popular Collection'
+
+    top_collectors = User.objects.annotate(
+        total_auction_price=Sum('nfts__auctions__price')
+    ).order_by('-total_auction_price')[:12]
+    half_count = len(top_collectors) // 2
+    if half_count > 4:
+        top_collectors_1 = top_collectors[:half_count]
+        top_collectors_2 = top_collectors[half_count:]
+    else:
+        top_collectors_1 = top_collectors
+        top_collectors_2 = []
     
     categories = Category.objects.all()
     blockchains = Blockchain.objects.all()
@@ -51,7 +63,7 @@ def collections_list(request, username=None):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         html = render_to_string('partials/collection-cards.html', {'page_obj': page_obj})
         return JsonResponse({'html': html})
-
+   
     context = {
         'categories': categories,
         'blockchains': blockchains,
@@ -63,6 +75,8 @@ def collections_list(request, username=None):
         'blockchain_filter': blockchain_filter,
         'category_filter': category_filter,
         'sort_by': sort_by,
+        'top_collectors_1': top_collectors_1,
+        'top_collectors_2': top_collectors_2,
     }
 
     return render(request, 'collections.html', context)
@@ -77,6 +91,17 @@ def collection_detail(request, id=None, username=None):
         collector = get_object_or_404(User, username=username)
         nfts = NFT.objects.filter(collectors=collector)
         collection = None
+
+    top_collectors = User.objects.annotate(
+        total_auction_price=Sum('nfts__auctions__price')
+    ).order_by('-total_auction_price')[:12]
+    half_count = len(top_collectors) // 2
+    if half_count > 4:
+        top_collectors_1 = top_collectors[:half_count]
+        top_collectors_2 = top_collectors[half_count:]
+    else:
+        top_collectors_1 = top_collectors
+        top_collectors_2 = []
     
     currencies = Currency.objects.all()
     following = Follow.objects.filter(follower=request.user, following=collector).exists() if request.user.is_authenticated else False
@@ -132,7 +157,9 @@ def collection_detail(request, id=None, username=None):
         'max_value': max_value,
         'currency_filter': currency_filter,
         'search_query': search_query,
-        'sort_by': sort_by
+        'sort_by': sort_by,
+        'top_collectors_1': top_collectors_1,
+        'top_collectors_2': top_collectors_2,
     }
     return render(request, 'collection-detail.html', context)
 

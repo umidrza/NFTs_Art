@@ -44,6 +44,7 @@
                                         <h5 class="creator-followers-count">{{ collector.followers.count }}</h5>
                                     </div>
                                 </div>
+                                {% if request.user.is_authenticated %}
                                 {% if request.user == collector %}
                                     <a href="{% url 'collection:user_nfts' collector.username %}">
                                         <button class="btn-green collection-card-btn">My NFTs</button>
@@ -52,6 +53,7 @@
                                     <button class="btn-outline-green collection-card-btn follow-btn" data-user-id="{{ collector.id }}">Following</button>
                                 {% else %}
                                     <button class="btn-green collection-card-btn follow-btn" data-user-id="{{ collector.id }}">Follow</button>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </div>
@@ -213,13 +215,15 @@
     </div>
 </section>
 
+{% if top_collectors_1 %}
 <section class="top-collectors-section">
     <h2 class="section-title">Our Top Collectors</h2>
     <div class="top-collectors-list auto-scroll">
+        {% for collector in top_collectors_1 %}
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
+                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
@@ -228,114 +232,26 @@
                 </div>
             </div>
             <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
+                <h4 class="top-collector-name">{{ collector.fullname }}</h4>
                 <div class="top-collector-eth">
                     <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
+                    
+                    <p class="eth-value">
+                        {% if collector.total_auction_price %}
+                            {{ collector.total_auction_price|floatformat:2 }}
+                        {% else %}0{% endif %}
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar3.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     <div class="top-collectors-list auto-scroll">
+        {% for collector in top_collectors_2 %}
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
+                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
@@ -344,110 +260,22 @@
                 </div>
             </div>
             <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
+                <h4 class="top-collector-name">{{ collector.fullname }}</h4>
                 <div class="top-collector-eth">
                     <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
+                    
+                    <p class="eth-value">
+                        {% if collector.total_auction_price %}
+                            {{ collector.total_auction_price|floatformat:2 }}
+                        {% else %}0{% endif %}
+                    </p>
                 </div>
             </div>
         </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar4.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar2.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
-        <div class="top-collector">
-            <p class="top-collector-place"></p>
-            <div class="avatar">
-                <a href="#"><img class="avatar-img" src="/static/img/avatar3.jpeg" alt=""></a>
-                <div class="avatar-icons">
-                    <div class="verified-icon">
-                        <i class="star-icon"></i>
-                        <i class="fa-solid fa-check check-icon"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="top-collector-info">
-                <h4 class="top-collector-name">Lincoln George</h4>
-                <div class="top-collector-eth">
-                    <i class="fa-brands fa-ethereum"></i>
-                    <p class="eth-value">2,798</p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </section>
+{% endif %}
 
 {% endblock main %}
 
