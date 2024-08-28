@@ -321,10 +321,11 @@
                         New product release and more
                     </p>
                 </div>
-                <form action="" class="get-in-touch-form">
+                <form action="{% url 'home:get-in-touch' %}" method="post" class="get-in-touch-form">
+                    {% csrf_token %}
                     <div class="get-in-touch-input-box">
                         <i class="fa-regular fa-envelope sms-icon"></i>
-                        <input type="email" class="get-in-touch-input" placeholder="Email address">
+                        <input type="email" name="email" class="get-in-touch-input" placeholder="Email address">
                     </div>
                     <button type="submit" class="get-in-touch-button btn-green">Get In Touch</button>
                 </form>

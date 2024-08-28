@@ -654,7 +654,18 @@ footer {
     background: black;
     padding-top: 160px;
     padding-bottom: 120px;
+}
+
+body:has(.hero-cards) .roadmap-section{
     margin-top: -80px;
+}
+
+body:not(:has(.hero-cards)) .hero-section{
+    padding-bottom: 80px;
+}
+
+body:not(:has(.hero-cards)) .roadmap-section{
+    padding-top: 80px;
 }
 
 .roadmap {

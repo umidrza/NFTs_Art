@@ -1,9 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.db.models import Count, Sum
 from .models import Faq
 from collection.models import NFT, Auction
 from users.models import User, Avatar
+from django.conf import settings
+from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 
 
 def home_view(request):
@@ -78,3 +82,25 @@ def faq_view(request):
         'top_collectors_2': top_collectors_2,
     }
     return render(request, 'faq.html', context)
+
+
+def get_in_touch(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        if email:
+            name = request.user.fullname if request.user.is_authenticated else 'Subscriber'
+            html_message = render_to_string('partials/subscriber-email.html', {'name': name})
+            email_message = EmailMessage(
+                subject = 'NFTs Art Newsletter',
+                body = html_message,
+                from_email = settings.EMAIL_HOST_USER,
+                to = [email],
+            )
+            email_message.content_subtype = 'html'
+            email_message.send()
+
+            messages.success(request, 'Email sent successfully!')
+        else:
+            messages.error(request, 'Please provide a valid email address.')
+    
+    return redirect('home:faq')

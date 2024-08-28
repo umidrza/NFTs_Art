@@ -8,4 +8,5 @@ urlpatterns = [
     path('roadmap/', roadmap_view, name='roadmap'),
     path('ourclans/', ourclans_view, name='ourclans'),
     path('faq/', faq_view, name='faq'),
+    path('get-in-touch/', get_in_touch, name='get-in-touch'),
 ]
