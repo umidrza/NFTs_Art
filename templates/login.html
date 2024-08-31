@@ -61,8 +61,18 @@
                         </div>
                         <div class="form-control">
                             <div class="form-input-box">
+                                <input type="email" id="email" name="email" class="form-input" required>
+                                <label for="email" class="form-label">Email</label>
+                            </div>
+                            {% if register_form.email.errors %}
+                                <div class="form-warning">{{ register_form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-control">
+                            <div class="form-input-box">
                                 <input type="password" id="password1" name="password1" class="form-input" required >
                                 <label for="password1" class="form-label">Password</label>
+                                <i class="fa-regular fa-eye-slash password-show-btn"></i>
                             </div>
                             {% if register_form.password1.errors %}
                                 <div class="form-warning">{{ register_form.password1.errors.0 }}</div>
@@ -72,6 +82,7 @@
                             <div class="form-input-box">
                                 <input type="password" id="password2" name="password2" class="form-input" required>
                                 <label for="password2" class="form-label">Confirm Password</label>
+                                <i class="fa-regular fa-eye-slash password-show-btn"></i>
                             </div>
                             {% if register_form.password2.errors %}
                                 <div class="form-warning">{{ register_form.password2.errors.0 }}</div>
@@ -117,7 +128,7 @@
                 <div class="form-input-box">
                     <input type="password" name="password" id="password" class="form-input" required>
                     <label for="password" class="form-label">Password</label>
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
                 {% if login_form.password.errors %}
                     <p class="form-warning">{{ login_form.password.errors.0 }}</p>
@@ -128,7 +139,8 @@
             {% endif %}
             <input type="hidden" name="next" value="{{ request.GET.next }}">
             <button type="submit" name="login" class="btn-green">Login</button>
-            <button type="button" class="btn-outline-green">Forgot Password?</button>
+            <button type="button" class="btn-outline-green" id="forgot-password-button">Forgot Password?</button>
+            
             <div class="register-link">
                 <p>Don't have an account? <span id="register-btn">Register</span></p>
             </div>
@@ -136,4 +148,153 @@
     </div>
 </section>
 
+<section class="popup-section" id="forgot-password-popup">
+    <div class="popup">
+        <h2 class="popup-title">Forgot Password</h2>
+        <form method="post" id="forgot-password-form" class="popup-form">
+            {% csrf_token %}
+            <div class="form-control">
+                <label for="email" class="form-label">Enter your email address:</label>
+                <input type="email" name="email" id="forgot-password-email" class="form-input" placeholder="Type here..." required>
+            </div>
+            <button type="submit" class="btn-green">Send Verification Code</button>
+        </form>
+    </div>
+</section>
+
+<section class="popup-section" id="verify-code-popup">
+    <div class="popup">
+        <h2 class="popup-title">Verify Code</h2>
+        <form method="post" id="verify-code-form" class="popup-form">
+            {% csrf_token %}
+            <div class="form-control">
+                <label for="token" class="form-label">Verification Code:</label>
+                <input type="text" name="token" id="token" class="form-input" placeholder="Type here..." required>
+            </div>
+            <button type="submit" class="btn-green">Verify Code</button>
+        </form>
+    </div>
+</section>
+
+<section class="popup-section" id="reset-password-popup">
+    <div class="popup">
+        <h2 class="popup-title">Reset Password</h2>
+        <form method="post" id="reset-password-form" class="popup-form">
+            {% csrf_token %}
+            <div class="form-control">
+                <div class="form-input-box">
+                    <input type="password" name="password" id="forgot_password-password" class="form-input" placeholder="Type here..." required>
+                    <label for="password" class="form-label">New Password</label>
+                    <i class="fa-regular fa-eye-slash password-show-btn"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-green">Reset Password</button>
+        </form>
+    </div>
+</section>
+
 {% endblock main %}
+
+{% block scripts %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('forgot-password-button').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('forgot-password-popup').classList.add('active');
+        });
+
+        document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch("{% url 'user:forgot_password' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(this)).toString(),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('forgot-password-popup').classList.remove('active');
+                    document.getElementById('verify-code-popup').classList.add('active');
+                    addMessage(data.message, 'success');
+                } else {
+                    addMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('Error sending verification code. Please try again.', 'error');
+            });
+        });
+        
+        document.getElementById('verify-code-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch("{% url 'user:verify_code' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(this)).toString(),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('verify-code-popup').classList.remove('active');
+                    document.getElementById('reset-password-popup').classList.add('active');
+                    addMessage(data.message, 'success');
+                } else {
+                    addMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('Invalid verification code. Please try again.', 'error');
+            });
+        });
+        
+        document.getElementById('reset-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch("{% url 'user:reset_password' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(this)).toString(),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('reset-password-popup').classList.remove('active');
+                    addMessage(data.message, 'success');
+                } else {
+                    addMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addMessage('Error resetting password. Please try again.', 'error');
+            });
+        }); 
+
+        function addMessage(text, type = 'info') {
+            const messagesContainer = document.getElementById('messages');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('alert', `alert-${type}`);
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.classList.add('deactive');
+            }, 3000); 
+        
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3500);
+        }
+    });    
+</script>
+
+{% endblock scripts %}

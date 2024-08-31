@@ -5,6 +5,13 @@ from django.contrib.auth.decorators import login_required
 from .models import User, Follow
 from django.http import JsonResponse
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.conf import settings
+import random
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 def login_register_view(request):
@@ -48,7 +55,12 @@ def login_register_view(request):
                 else:
                     login_form.add_error(None, 'Invalid username or password')
 
-    return render(request, 'login.html', {'register_form': register_form, 'login_form': login_form})
+    context = {
+        'register_form': register_form, 
+        'login_form': login_form
+    }
+
+    return render(request, 'login.html', context)
 
 
 @login_required
@@ -66,3 +78,62 @@ def follow_user(request, user_id):
     
     follower_count = user_to_follow.followers.count()
     return JsonResponse({'status': 'followed' , 'follower_count': follower_count})
+    
+
+def forgot_password(request):
+    email = request.POST.get('email')
+    user = User.objects.filter(email=email).first()
+    if user:
+        token = str(random.randint(100000, 999999))
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        send_mail(
+            'Password Reset Verification Code',
+            f'Your verification code is: {token}',
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+        request.session['uid'] = uid
+        request.session['token'] = token
+        return JsonResponse({'message': 'Verification code has been sent to your email.', 'success': True})
+    else:
+        return JsonResponse({'message': 'No account found with this email.', 'success': False})
+
+
+def verify_code(request):
+    submitted_token = request.POST.get('token')
+    stored_token = request.session.get('token')
+    uid = request.session.get('uid')
+    if uid is None or stored_token is None:
+        return JsonResponse({'message': 'Session expired. Please try again.', 'success': False})
+
+    if submitted_token == stored_token:
+        request.session.pop('token')
+        return JsonResponse({'message': 'Code verified. Proceed to reset password.', 'success': True})
+    else:
+        return JsonResponse({'message': 'Invalid verification code.', 'success': False})
+
+
+def reset_password(request):
+    new_password = request.POST.get('password')
+    uid = request.session.get('uid')
+
+    if uid is None:
+        return JsonResponse({'message': 'Session expired. Please try again.', 'success': False})
+    
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+
+        try:
+            validate_password(new_password, user)
+        except ValidationError as e:
+            return JsonResponse({'message': e.messages[:1], 'success': False})
+
+        user.set_password(new_password) 
+        user.save()
+
+        return JsonResponse({'message': 'Password has been reset successfully.', 'success': True})
+    except User.DoesNotExist:
+        return JsonResponse({'message': 'Invalid session. Please try again.', 'success': False})

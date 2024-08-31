@@ -2405,6 +2405,14 @@ tr.spacing td {
     width: 100%;
 }
 
+.popup-form{
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
 .form-previews {
     display: flex;
     flex-direction: column;
@@ -2542,7 +2550,7 @@ tr.spacing td {
 
 .form-input,
 .form-textarea {
-    padding: 12px 16px;
+    padding: 12px 40px 12px 16px;
     border-radius: 24px;
     border: 1px solid var(--line-color);
     background: var(--grayscale-10-95);

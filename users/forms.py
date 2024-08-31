@@ -8,7 +8,7 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['fullname', 'username', 'avatar', 'password1', 'password2']
+        fields = ['fullname', 'username', 'email', 'avatar', 'password1', 'password2']
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=20, required=True)

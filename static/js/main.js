@@ -116,11 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.alert').forEach(alert => {
         setTimeout(() => {
             alert.classList.add('deactive');
-        }, 2000); 
+        }, 3000); 
     
         setTimeout(() => {
             alert.remove();
-        }, 2500);
+        }, 3500);
     });
 
     document.querySelectorAll('.popup-close-btn').forEach(popupCloseBtn => {
@@ -319,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 passwordShowBtn.classList.toggle('fa-eye-slash');
                 passwordShowBtn.classList.toggle('fa-eye');
                 passwordInput.type = passwordInput.type === 'text' ? 'password' : 'text';
+                passwordInput.focus();
             });
         });
     }

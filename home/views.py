@@ -89,17 +89,19 @@ def get_in_touch(request):
         email = request.POST.get('email')
         if email:
             name = request.user.fullname if request.user.is_authenticated else 'Subscriber'
-            html_message = render_to_string('partials/subscriber-email.html', {'name': name})
-            email_message = EmailMessage(
-                subject = 'NFTs Art Newsletter',
-                body = html_message,
-                from_email = settings.EMAIL_HOST_USER,
-                to = [email],
-            )
-            email_message.content_subtype = 'html'
-            email_message.send()
-
-            messages.success(request, 'Email sent successfully!')
+            try: 
+                html_message = render_to_string('partials/subscriber-email.html', {'name': name})
+                email_message = EmailMessage(
+                    subject = 'NFTs Art Newsletter',
+                    body = html_message,
+                    from_email = settings.EMAIL_HOST_USER,
+                    to = [email],
+                )
+                email_message.content_subtype = 'html'
+                email_message.send()
+                messages.success(request, 'Email sent successfully!')
+            except:
+                messages.error(request, "Can't send email right now. Please try again later")
         else:
             messages.error(request, 'Please provide a valid email address.')
     

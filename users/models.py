@@ -16,16 +16,20 @@ class Avatar(models.Model):
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, fullname, password=None, **extra_fields):
+    def create_user(self, username, fullname, email, password=None, **extra_fields):
         if not username:
             raise ValueError('The Username field must be set')
+        if not email:
+            raise ValueError('The Email field must be set')
+
         username = username.lower()
-        user = self.model(username=username, fullname=fullname, **extra_fields)
+        email = self.normalize_email(email)
+        user = self.model(username=username, fullname=fullname, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, fullname, password=None, **extra_fields):
+    def create_superuser(self, username, fullname, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -34,7 +38,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(username, fullname, password, **extra_fields)
+        return self.create_user(username, fullname, email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -45,6 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     username = models.CharField(max_length=20, unique=True, validators=[username_validator])
     fullname = models.CharField(max_length=30)
+    email = models.EmailField(unique=True)
     avatar = models.ForeignKey(Avatar, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -52,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['fullname']
+    REQUIRED_FIELDS = ['fullname', 'email']
 
     def __str__(self):
         return self.username
@@ -60,17 +65,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if self.username:
             self.username = self.username.lower()
+        self.email = self.email.lower()
         super(User, self).save(*args, **kwargs)
 
-    def update_profile(self, fullname=None, avatar=None):
+    def update_profile(self, fullname=None, avatar=None, email=None):
         if fullname:
             self.fullname = fullname
         if avatar:
             self.avatar = avatar
+        if email:
+            self.email = self.normalize_email(email)
         try:
             self.save()
         except ValidationError as e:
             raise ValidationError(f'Error updating profile: {e}')
+
 
 
 class Follow(models.Model):

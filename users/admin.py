@@ -1,26 +1,26 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, Avatar, Follow
+from django.utils.translation import gettext_lazy as _
 
 admin.site.register(Avatar)
 admin.site.register(Follow)
 
-@admin.register(User)
-class CustomUserAdmin(UserAdmin):
-    model = User
-    list_display = ('username', 'fullname', 'is_staff', 'is_active')
-    list_filter = ('is_staff', 'is_active')
+class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('fullname', 'avatar')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important dates', {'fields': ('last_login',)}),
+        (_('Personal info'), {'fields': ('fullname', 'email', 'avatar')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        (_('Important dates'), {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'fullname', 'password1', 'password2', 'is_staff', 'is_active')}
-        ),
+            'fields': ('username', 'fullname', 'email', 'password1', 'password2'),
+        }),
     )
-    search_fields = ('username', 'fullname')
+    list_display = ('username', 'email', 'fullname', 'is_staff', 'is_active')
+    search_fields = ('username', 'email', 'fullname')
     ordering = ('username',)
+
+admin.site.register(User, UserAdmin)
