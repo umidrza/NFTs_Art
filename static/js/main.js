@@ -272,21 +272,26 @@ document.addEventListener('DOMContentLoaded', function () {
         const loginPopup = document.getElementById('login-popup');
         const isLoginActive = localStorage.getItem('isLoginActive');
 
-        if (isLoginActive === 'true') {
+        if (isLoginActive === 'true' && loginPopup) {
             loginPopup.classList.add('active');
         }
 
-        loginBtn.addEventListener('click', () => {
-            loginPopup.classList.add('active');
-            localStorage.setItem('isLoginActive', 'true');
-        });
+        if (loginBtn){
+            loginBtn.addEventListener('click', () => {
+                
+                loginPopup.classList.add('active');
+                localStorage.setItem('isLoginActive', 'true');
+            });
+        }
 
-        registerBtn.addEventListener('click', () => {
-            loginPopup.classList.remove('active');
-            localStorage.setItem('isLoginActive', 'false');
-        });
+        if (registerBtn){
+            registerBtn.addEventListener('click', () => {
+                loginPopup.classList.remove('active');
+                localStorage.setItem('isLoginActive', 'false');
+            });
+        }
 
-
+        
         const avatars = document.querySelectorAll('#avatar-selection .avatar-img');
         const previewAvatar = document.querySelector('#avatar-preview .avatar-img');
         const avatarInput = document.querySelector('#avatar-input');

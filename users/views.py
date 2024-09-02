@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
-from .forms import RegisterForm, LoginForm
+from django.contrib.auth import authenticate, login, logout
+from .forms import RegisterForm, LoginForm, UpdateProfileForm
 from django.contrib.auth.decorators import login_required
 from .models import User, Follow
 from django.http import JsonResponse
@@ -64,6 +64,33 @@ def login_register_view(request):
 
 
 @login_required
+def update_profile(request, username):
+    user = User.objects.get(username=username)
+
+    if request.method == 'POST':
+        form = UpdateProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated successfully.')
+            return redirect('collection:user_collections', username=user.username)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = UpdateProfileForm(instance=user)
+
+    context = {
+        'register_form': form,
+        'operation': 'update',
+    }
+    return render(request, 'login.html', context)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("home")
+
+
+@login_required
 def follow_user(request, user_id):
     user_to_follow = get_object_or_404(User, id=user_id)
 
@@ -87,16 +114,21 @@ def forgot_password(request):
         token = str(random.randint(100000, 999999))
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         
-        send_mail(
-            'Password Reset Verification Code',
-            f'Your verification code is: {token}',
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
-        request.session['uid'] = uid
-        request.session['token'] = token
-        return JsonResponse({'message': 'Verification code has been sent to your email.', 'success': True})
+        print(token)
+        try: 
+            send_mail(
+                'Password Reset Verification Code',
+                f'Your verification code is: {token}',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
+            request.session['uid'] = uid
+            request.session['token'] = token
+            return JsonResponse({'message': 'Verification code has been sent to your email.', 'success': True})
+        except Exception as e:
+            print(e)
+            return JsonResponse({'message': "Can't send email right now. Please try again later", 'success': False})
     else:
         return JsonResponse({'message': 'No account found with this email.', 'success': False})
 

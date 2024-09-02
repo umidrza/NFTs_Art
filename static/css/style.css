@@ -93,7 +93,8 @@ body:has(header) {
 }
 
 .btn-green,
-.btn-outline-green {
+.btn-outline-green,
+.btn-red {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -136,12 +137,14 @@ body:has(header) {
     border-color: transparent;
 }
 
-.delete-btn{
+.delete-btn,
+.btn-red{
     background-color: var(--light-red);
     color: white;
 }
 
-.delete-btn:hover{
+.delete-btn:hover,
+.btn-red:hover{
     color: var(--light-red);
     border-color: var(--light-red);
     background-color: transparent;
@@ -1633,6 +1636,13 @@ tr.spacing td {
     width: 100%;
 }
 
+.nft-collections-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
 .nft-collections-container {
     display: flex;
     flex-direction: column;
@@ -2402,6 +2412,13 @@ tr.spacing td {
     grid-template-rows: 1fr;
     align-items: flex-start;
     gap: 80px;
+    width: 100%;
+}
+
+.register-form-title{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
 }
 

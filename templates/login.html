@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Login | Register
+    {% if operation == 'update' %}
+        Update Profile
+    {% else %}
+        Login | Register
+    {% endif %}
 {% endblock title %}
 
 {% block main %}
@@ -9,7 +13,20 @@
 <section class="form-section">
     <div class="container">
         <div class="form-container">
-            <h2 class="section-title">Register</h2>
+            <div class="register-form-title">
+                <h2 class="section-title">
+                    {% if operation == 'update' %}
+                        Update Profile
+                    {% else %}
+                        Register
+                    {% endif %}
+                </h2>
+                {% if operation == 'update' %}
+                    <a href="{% url 'user:logout' %}">
+                        <button class="btn-red">Logout</button>
+                    </a>
+                {% endif %}
+            </div>
             <form class="form" id="register-form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-previews">
@@ -21,8 +38,9 @@
                             </div>
                             <h3 class="register-fullname" id="previewFullname"></h3>
                         </div>
+                        
                         <div class="form-control">
-                            <input type="hidden" id="avatar-input" name="avatar">
+                            <input type="hidden" id="avatar-input" name="avatar" {% if register_form.avatar.value %}value="{{ register_form.avatar.value }}"{% endif %}>
                             {% if register_form.avatar.errors %}
                                 <div class="form-warning">{{ register_form.avatar.errors.0 }}</div>
                             {% endif %}
@@ -43,7 +61,7 @@
                     <div class="form-inputs">
                         <div class="form-control">
                             <div class="form-input-box">
-                                <input type="text" id="fullNameInput" name="fullname" class="form-input" required>
+                                <input type="text" id="fullNameInput" name="fullname" class="form-input" {% if register_form.fullname.value %}value="{{ register_form.fullname.value }}"{% endif %} required>
                                 <label for="fullname" class="form-label">Full name</label>
                             </div>
                             {% if register_form.fullname.errors %}
@@ -52,7 +70,7 @@
                         </div>
                         <div class="form-control">
                             <div class="form-input-box">
-                                <input type="text" id="register-username" name="username" class="form-input" required>
+                                <input type="text" id="register-username" name="username" class="form-input" {% if register_form.username.value %}value="{{ register_form.username.value }}"{% endif %} required>
                                 <label for="username" class="form-label">Username</label>
                             </div>
                             {% if register_form.username.errors %}
@@ -61,13 +79,14 @@
                         </div>
                         <div class="form-control">
                             <div class="form-input-box">
-                                <input type="email" id="email" name="email" class="form-input" required>
+                                <input type="email" id="email" name="email" class="form-input" {% if register_form.email.value %}value="{{ register_form.email.value }}"{% endif %} required>
                                 <label for="email" class="form-label">Email</label>
                             </div>
                             {% if register_form.email.errors %}
                                 <div class="form-warning">{{ register_form.email.errors.0 }}</div>
                             {% endif %}
                         </div>
+                        {% if operation != 'update' %}
                         <div class="form-control">
                             <div class="form-input-box">
                                 <input type="password" id="password1" name="password1" class="form-input" required >
@@ -88,6 +107,8 @@
                                 <div class="form-warning">{{ register_form.password2.errors.0 }}</div>
                             {% endif %}
                         </div>
+                        {% endif %}
+
                         {% if register_form.non_field_errors %}
                             <p class="form-warning">{{ register_form.non_field_errors.0 }}</p>
                         {% endif %}
@@ -95,20 +116,29 @@
                         <input type="hidden" name="next" value="{{ request.GET.next }}">
                     </div>
                     <div class="form-buttons">
-                        <button type="submit" name="register" class="form-button btn-green">Register</button>
+                        <button type="submit" name="register" class="form-button btn-green">
+                            {% if operation == 'update' %}
+                                Update Profile
+                            {% else %}
+                                Register
+                            {% endif %}
+                        </button>
                     </div>
+                    {% if operation != 'update' %}
                     <div class="form-checkboxes">
                         <div class="form-info">
                             <label class="form-label">Have an account already?</label>
                             <h5 id="login-btn">Log in</h5>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </form>
         </div>
     </div>
 </section>
 
+{% if operation != 'update' %}
 <section class="popup-section" id="login-popup">
     <div class="popup">
         <h2 class="popup-title">Login</h2>
@@ -147,6 +177,7 @@
         </form>
     </div>
 </section>
+{% endif %}
 
 <section class="popup-section" id="forgot-password-popup">
     <div class="popup">
@@ -199,10 +230,13 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('forgot-password-button').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('forgot-password-popup').classList.add('active');
-        });
+        const forgotPasswordBtn =  document.getElementById('forgot-password-button');
+        if(forgotPasswordBtn) {
+            forgotPasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('forgot-password-popup').classList.add('active');
+            });
+        }
 
         document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
             e.preventDefault();
