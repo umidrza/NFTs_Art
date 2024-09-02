@@ -12,7 +12,7 @@
             <div class="nft-collections-title">
                 <h2 class="section-title">{{ title }}</h2>
                 {% if title == 'My Collections' %}
-                <a href="{% url 'user:update_profile' request.user.username %}">
+                <a href="{% url 'user:update_profile' %}">
                     <button class="btn-outline-green">My profile</button>
                 </a>
                 {% endif %}

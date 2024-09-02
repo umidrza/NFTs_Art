@@ -123,6 +123,9 @@
                                 Register
                             {% endif %}
                         </button>
+                        {% if operation == 'update' %}
+                            <button type="button" class="btn-outline-green" id="update-password-button">Update Password?</button>
+                        {% endif %} 
                     </div>
                     {% if operation != 'update' %}
                     <div class="form-checkboxes">
@@ -210,15 +213,43 @@
 <section class="popup-section" id="reset-password-popup">
     <div class="popup">
         <h2 class="popup-title">Reset Password</h2>
-        <form method="post" id="reset-password-form" class="popup-form">
+        <form method="post" id="reset-password-form" class="popup-form {% if operation == 'update' %}update-password-form{% endif %}">
             {% csrf_token %}
+
+            <div class="form-control" id="current-password-input">
+                <div class="form-input-box">
+                    <input type="password" name="old-password" id="old-password" class="form-input" {% if operation == 'update' %}required{% endif %}>
+                    <label for="old-password" class="form-label">Current Password</label>
+                    <i class="fa-regular fa-eye-slash password-show-btn"></i>
+                </div>
+                {% if form.password.errors %}
+                    <div class="form-warning">{{ form.password.errors.0 }}</div>
+                {% endif %}
+            </div>
             <div class="form-control">
                 <div class="form-input-box">
-                    <input type="password" name="password" id="forgot_password-password" class="form-input" placeholder="Type here..." required>
+                    <input type="password" name="new-password1" id="new-password1" class="form-input" required>
                     <label for="password" class="form-label">New Password</label>
                     <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
+                {% if form.password1.errors %}
+                    <div class="form-warning">{{ form.password2.errors.0 }}</div>
+                {% endif %}
             </div>
+            <div class="form-control">
+                <div class="form-input-box">
+                    <input type="password" name="new-password2" id="new-password2" class="form-input" required>
+                    <label for="password" class="form-label">Confirm New Password</label>
+                    <i class="fa-regular fa-eye-slash password-show-btn"></i>
+                </div>
+                {% if form.password2.errors %}
+                    <div class="form-warning">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+                <p class="form-warning">{{ form.non_field_errors.0 }}</p>
+            {% endif %}
             <button type="submit" class="btn-green">Reset Password</button>
         </form>
     </div>
@@ -235,6 +266,14 @@
             forgotPasswordBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 document.getElementById('forgot-password-popup').classList.add('active');
+            });
+        }
+
+        const updatePasswordBtn =  document.getElementById('update-password-button');
+        if(updatePasswordBtn) {
+            updatePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('reset-password-popup').classList.add('active');
             });
         }
 
@@ -277,6 +316,7 @@
                 if (data.success) {
                     document.getElementById('verify-code-popup').classList.remove('active');
                     document.getElementById('reset-password-popup').classList.add('active');
+                    document.getElementById('current-password-input').classList.add('hidden');
                     addMessage(data.message, 'success');
                 } else {
                     addMessage(data.message, 'error');
@@ -290,7 +330,13 @@
         
         document.getElementById('reset-password-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            fetch("{% url 'user:reset_password' %}", {
+            url = "{% url 'user:reset_password' %}";
+
+            if (this.classList.contains('update-password-form')){
+                url = "{% url 'user:update_password' %}"
+            }
+            
+            fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

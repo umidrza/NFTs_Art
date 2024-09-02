@@ -9,9 +9,10 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
-import random
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.contrib.auth import update_session_auth_hash
+import random
 
 
 def login_register_view(request):
@@ -63,9 +64,14 @@ def login_register_view(request):
     return render(request, 'login.html', context)
 
 
+def logout_view(request):
+    logout(request)
+    return redirect("home")
+
+
 @login_required
-def update_profile(request, username):
-    user = User.objects.get(username=username)
+def update_profile(request):
+    user = request.user
 
     if request.method == 'POST':
         form = UpdateProfileForm(request.POST, request.FILES, instance=user)
@@ -85,9 +91,31 @@ def update_profile(request, username):
     return render(request, 'login.html', context)
 
 
-def logout_view(request):
-    logout(request)
-    return redirect("home")
+@login_required
+def update_password(request):
+    new_password1 = request.POST.get('new-password1')
+    new_password2 = request.POST.get('new-password2')
+    current_password = request.POST.get('old-password')
+    user = request.user
+
+    if current_password is None or not user.check_password(current_password):
+        return JsonResponse({'message': 'Current password is incorrect', 'success': False})
+    
+    if new_password1 == current_password:
+        return JsonResponse({'message': 'The new password cannot be the same as the current password.', 'success': False})
+    
+    if new_password1 and new_password2 and new_password1 != new_password2:
+        return JsonResponse({'message': 'The two new password fields must match.', 'success': False})
+        
+    try:
+        validate_password(new_password1, user)
+    except ValidationError as e:
+        return JsonResponse({'message': e.messages[:1], 'success': False})
+
+    user.set_password(new_password1) 
+    user.save()
+    update_session_auth_hash(request, user)
+    return JsonResponse({'message': 'Password has been updated successfully.', 'success': True})
 
 
 @login_required
@@ -116,13 +144,13 @@ def forgot_password(request):
         
         print(token)
         try: 
-            send_mail(
-                'Password Reset Verification Code',
-                f'Your verification code is: {token}',
-                settings.EMAIL_HOST_USER,
-                [email],
-                fail_silently=False,
-            )
+            # send_mail(
+            #     'Password Reset Verification Code',
+            #     f'Your verification code is: {token}',
+            #     settings.EMAIL_HOST_USER,
+            #     [email],
+            #     fail_silently=False,
+            # )
             request.session['uid'] = uid
             request.session['token'] = token
             return JsonResponse({'message': 'Verification code has been sent to your email.', 'success': True})
@@ -148,8 +176,12 @@ def verify_code(request):
 
 
 def reset_password(request):
-    new_password = request.POST.get('password')
+    new_password = request.POST.get('password1')
+    confirm_password = request.POST.get('password2')
     uid = request.session.get('uid')
+
+    if new_password and confirm_password and new_password != confirm_password:
+        return JsonResponse({'message': 'The two new password fields must match.', 'success': False})
 
     if uid is None:
         return JsonResponse({'message': 'Session expired. Please try again.', 'success': False})

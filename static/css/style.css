@@ -2428,6 +2428,12 @@ tr.spacing td {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    width: 100%;
+}
+
+.popup-form button {
+    padding: 12px 24px;
+    width: 100%;
 }
 
 .form-previews {
