@@ -114,12 +114,14 @@
                         </div>
                     </div>
                 </div>
+
+                {% if request.user.is_authenticated %}
                 <div class="auction-terms">
                     <div class="term-check-icon">
                         <i class="fa-solid fa-check check-icon hidden"></i>
                     </div>
                     <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
-                </div>  
+                </div>
                 <div class="auction-buttons">
                     {% if status != 'not-on-sale' %}
                         {% if request.user == auction.saler %}
@@ -145,6 +147,8 @@
                         </a>
                     {% endif %}
                 </div>
+                {% endif %}
+
                 {% if status != 'not-on-sale' %}
                 <div class="auction-charts">
                     {% if bids.exists %}
@@ -240,7 +244,11 @@
                                         <td class="countdown days" data-date="{{ auction.end_time|date:'c' }}"></td>
                                         <td>{{ auction.saler }}</td>
                                         <td>
-                                            <a href="{% url 'collection:auction_detail' nft_id=nft.id auction_id=auction.id %}"><button class="btn-outline-green">Buy</button></a>
+                                            {% if request.user.is_authenticated and request.user != auction.saler %}
+                                            <a href="{% url 'collection:auction_detail' nft_id=nft.id auction_id=auction.id %}">
+                                                <button class="btn-outline-green">Buy</button>
+                                            </a>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                     <tr class="spacing">

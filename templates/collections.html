@@ -11,11 +11,6 @@
         <div class="nft-collections">
             <div class="nft-collections-title">
                 <h2 class="section-title">{{ title }}</h2>
-                {% if title == 'My Collections' %}
-                <a href="{% url 'user:update_profile' %}">
-                    <button class="btn-outline-green">My profile</button>
-                </a>
-                {% endif %}
             </div>
             <div class="nft-collections-container">
                 <div class="collection-search">
@@ -66,6 +61,11 @@
                 <div class="collection-cards-filters">
                     {% if categories %}
                     <div class="collection-filters">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'collection:create' %}">
+                            <button class="btn-outline-green">Create Collection</button>
+                        </a>
+                        {% endif %}
                         <div class="collection-filter">
                             <div class="collection-filter-title">
                                 <h3>Categories</h3>
@@ -86,6 +86,7 @@
                         </div>
                     </div>
                     {% endif %}
+
                     {% if page_obj %}
                     <div class="collection-cards-pagination">
                         <div class="collection-cards">
@@ -127,10 +128,6 @@
                         </div>
                         {% endif %}
                     </div>
-                    {% else %}
-                    <a href="{% url 'collection:create' %}">
-                        <button class="form-button btn-green">Create Collection</button>
-                    </a>
                     {% endif %}
                 </div>
             </div>

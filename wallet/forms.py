@@ -5,4 +5,4 @@ from .models import Wallet
 class WalletForm(forms.ModelForm):
     class Meta:
         model = Wallet
-        fields = ['provider', 'blockchain', 'balance']
+        fields = ['provider', 'blockchain']

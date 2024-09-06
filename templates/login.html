@@ -21,11 +21,6 @@
                         Register
                     {% endif %}
                 </h2>
-                {% if operation == 'update' %}
-                    <a href="{% url 'user:logout' %}">
-                        <button class="btn-red">Logout</button>
-                    </a>
-                {% endif %}
             </div>
             <form class="form" id="register-form" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -59,6 +54,8 @@
                 </div>                        
                 <div class="form-inputs-container">
                     <div class="form-inputs">
+                        <input type="text" style="display:none" autocomplete="username">
+                        <input type="password" style="display:none" autocomplete="new-password">
                         <div class="form-control">
                             <div class="form-input-box">
                                 <input type="text" id="fullNameInput" name="fullname" class="form-input" {% if register_form.fullname.value %}value="{{ register_form.fullname.value }}"{% endif %} required>
@@ -70,7 +67,7 @@
                         </div>
                         <div class="form-control">
                             <div class="form-input-box">
-                                <input type="text" id="register-username" name="username" class="form-input" {% if register_form.username.value %}value="{{ register_form.username.value }}"{% endif %} required>
+                                <input type="text" id="register-username" name="username" class="form-input" autocomplete="off" {% if register_form.username.value %}value="{{ register_form.username.value }}"{% endif %} required>
                                 <label for="username" class="form-label">Username</label>
                             </div>
                             {% if register_form.username.errors %}
@@ -89,7 +86,7 @@
                         {% if operation != 'update' %}
                         <div class="form-control">
                             <div class="form-input-box">
-                                <input type="password" id="password1" name="password1" class="form-input" required >
+                                <input type="password" id="password1" name="password1" class="form-input" autocomplete="off" required >
                                 <label for="password1" class="form-label">Password</label>
                                 <i class="fa-regular fa-eye-slash password-show-btn"></i>
                             </div>
@@ -125,6 +122,9 @@
                         </button>
                         {% if operation == 'update' %}
                             <button type="button" class="btn-outline-green" id="update-password-button">Update Password?</button>
+                            <a href="{% url 'user:logout' %}">
+                                <button type="button" class="btn-red logout-btn">Logout</button>
+                            </a>
                         {% endif %} 
                     </div>
                     {% if operation != 'update' %}
@@ -147,9 +147,11 @@
         <h2 class="popup-title">Login</h2>
         <form class="login-form" method="post">
             {% csrf_token %}
+            <input type="text" style="display:none" autocomplete="username">
+            <input type="password" style="display:none" autocomplete="new-password">
             <div class="form-control">
                 <div class="form-input-box">
-                    <input type="text" name="username" id="username" class="form-input" required>
+                    <input type="text" name="username" id="username" class="form-input" autocomplete="off" required>
                     <label for="username" class="form-label">Username</label>
                     <i class="fa-solid fa-user"></i>
                 </div>
@@ -159,7 +161,7 @@
             </div>
             <div class="form-control">
                 <div class="form-input-box">
-                    <input type="password" name="password" id="password" class="form-input" required>
+                    <input type="password" name="password" id="password" class="form-input" autocomplete="off" required>
                     <label for="password" class="form-label">Password</label>
                     <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
@@ -222,9 +224,6 @@
                     <label for="old-password" class="form-label">Current Password</label>
                     <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
-                {% if form.password.errors %}
-                    <div class="form-warning">{{ form.password.errors.0 }}</div>
-                {% endif %}
             </div>
             <div class="form-control">
                 <div class="form-input-box">
@@ -232,9 +231,6 @@
                     <label for="password" class="form-label">New Password</label>
                     <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
-                {% if form.password1.errors %}
-                    <div class="form-warning">{{ form.password2.errors.0 }}</div>
-                {% endif %}
             </div>
             <div class="form-control">
                 <div class="form-input-box">
@@ -242,14 +238,8 @@
                     <label for="password" class="form-label">Confirm New Password</label>
                     <i class="fa-regular fa-eye-slash password-show-btn"></i>
                 </div>
-                {% if form.password2.errors %}
-                    <div class="form-warning">{{ form.password2.errors.0 }}</div>
-                {% endif %}
             </div>
 
-            {% if form.non_field_errors %}
-                <p class="form-warning">{{ form.non_field_errors.0 }}</p>
-            {% endif %}
             <button type="submit" class="btn-green">Reset Password</button>
         </form>
     </div>
@@ -279,6 +269,11 @@
 
         document.getElementById('forgot-password-form').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const submitBtn = document.querySelector('#forgot-password-form button[type="submit"]');
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
             fetch("{% url 'user:forgot_password' %}", {
                 method: 'POST',
                 headers: {
@@ -299,6 +294,10 @@
             .catch(error => {
                 console.error('Error:', error);
                 addMessage('Error sending verification code. Please try again.', 'error');
+            })
+            .finally(() => {
+                submitBtn.textContent = 'Send Verification Code';
+                submitBtn.disabled = false;
             });
         });
         

@@ -15,7 +15,7 @@ def connect_wallet(request):
         if form.is_valid():
             provider = form.cleaned_data['provider']
             blockchain = form.cleaned_data['blockchain']
-            balance = form.cleaned_data['balance']
+            balance = 100
 
             wallet, created = Wallet.objects.get_or_create(
                 user=request.user,

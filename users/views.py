@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import update_session_auth_hash
+from django.urls import reverse
 import random
 
 
@@ -49,10 +50,11 @@ def login_register_view(request):
                     login(request, user)
                     messages.success(request, f'Welcome back {user.fullname}')
                     next_url = request.GET.get('next')
-                    if next_url:
-                        return redirect(next_url)
+
+                    if next_url is None or next_url == reverse('user:login'):
+                        return redirect('home')
                     else:
-                        return redirect('home') 
+                        return redirect(next_url)
                 else:
                     login_form.add_error(None, 'Invalid username or password')
 
@@ -144,13 +146,13 @@ def forgot_password(request):
         
         print(token)
         try: 
-            # send_mail(
-            #     'Password Reset Verification Code',
-            #     f'Your verification code is: {token}',
-            #     settings.EMAIL_HOST_USER,
-            #     [email],
-            #     fail_silently=False,
-            # )
+            send_mail(
+                'Password Reset Verification Code',
+                f'Your verification code is: {token}',
+                settings.EMAIL_HOST_USER,
+                [email],
+                fail_silently=False,
+            )
             request.session['uid'] = uid
             request.session['token'] = token
             return JsonResponse({'message': 'Verification code has been sent to your email.', 'success': True})
