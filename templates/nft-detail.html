@@ -118,7 +118,7 @@
                 {% if request.user.is_authenticated %}
                 <div class="auction-terms">
                     <div class="term-check-icon">
-                        <i class="fa-solid fa-check check-icon hidden"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
                     </div>
                     <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                 </div>
@@ -126,24 +126,24 @@
                     {% if status != 'not-on-sale' %}
                         {% if request.user == auction.saler %}
                             <a href="{% url 'collection:auction_update' auction.id %}?next={{ request.path }}">
-                                <button class="auction-button btn-green" disabled>Update</button>
+                                <button class="auction-button btn-green">Update</button>
                             </a>         
                             <form action="{% url 'collection:auction_delete' auction.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="auction-button btn-green delete-btn" disabled>Delete</button>
+                                <button type="submit" class="auction-button btn-green delete-btn">Delete</button>
                             </form>
                         {% elif status == 'auction' and request.user not in nft.collectors.all %}
                             <form action="{% url 'collection:auction_purchase' auction.id %}" method="post">
                                 {% csrf_token %}
-                                <button class="auction-button btn-green" disabled>Purchase now</button>
+                                <button type="submit" class="auction-button btn-green">Purchase now</button>
                             </form>
                             <a href="{% url 'collection:auction_bid' auction.id %}">
-                                <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                                <button class="auction-button btn-outline-green">Place a bid</button>
                             </a>
                         {% endif %}
                     {% elif request.user == nft.creator %}
                         <a href="{% url 'collection:auction_create' nft.id %}">
-                            <button class="auction-button btn-green" disabled>List item for Sale</button>
+                            <button class="auction-button btn-green">List item for Sale</button>
                         </a>
                     {% endif %}
                 </div>
@@ -151,7 +151,7 @@
 
                 {% if status != 'not-on-sale' %}
                 <div class="auction-charts">
-                    {% if bids.exists %}
+                    {% if bids.count > 1 %}
                     <div class="auction-chart dropdown">
                         <div class="chart-title dropdown-btn">
                             <h3>Price History</h3>
@@ -244,11 +244,12 @@
                                         <td class="countdown days" data-date="{{ auction.end_time|date:'c' }}"></td>
                                         <td>{{ auction.saler }}</td>
                                         <td>
-                                            {% if request.user.is_authenticated and request.user != auction.saler %}
-                                            <a href="{% url 'collection:auction_detail' nft_id=nft.id auction_id=auction.id %}">
-                                                <button class="btn-outline-green">Buy</button>
-                                            </a>
-                                            {% endif %}
+                                        {% if request.user.is_authenticated and request.user not in nft.collectors.all %}
+                                            <form action="{% url 'collection:auction_purchase' auction.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn-outline-green">Buy</button>
+                                            </form>
+                                        {% endif %}
                                         </td>
                                     </tr>
                                     <tr class="spacing">

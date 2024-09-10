@@ -61,7 +61,12 @@ def collections_list(request, username=None):
     page_obj = paginator.get_page(page_number)
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string('partials/collection-cards.html', {'page_obj': page_obj})
+        context = {
+            'page_obj': page_obj,
+            'following': following,
+            'request': request
+        }
+        html = render_to_string('partials/collection-cards.html', context)
         return JsonResponse({'html': html})
    
     context = {
@@ -142,7 +147,11 @@ def collection_detail(request, id=None, username=None):
     page_obj = paginator.get_page(page_number)
         
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        html = render_to_string('partials/nft-cards.html', {'page_obj': page_obj})
+        context = {
+            'page_obj': page_obj,
+            'collection': collection,
+        }
+        html = render_to_string('partials/nft-cards.html', context)
         return JsonResponse({'html': html})
     
     context = {
@@ -268,6 +277,11 @@ def nft_create(request):
 def auction_create(request, nft_id):
     currencies = Currency.objects.all()
     nft = get_object_or_404(NFT, id=nft_id)
+
+    auction = Auction.objects.filter(saler=request.user, nft=nft).first()
+    if auction: 
+        messages.error(request, f"You have already submitted this form")
+        return redirect('collection:auction_sell', auction.id)
 
     if request.method == 'POST':
         form = AuctionForm(request.POST)

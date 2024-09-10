@@ -295,8 +295,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const avatars = document.querySelectorAll('#avatar-selection .avatar-img');
         const previewAvatar = document.querySelector('#avatar-preview .avatar-img');
         const avatarInput = document.querySelector('#avatar-input');
-        previewAvatar.src = avatars[0].src;
-        avatarInput.value = avatars[0].getAttribute('data-avatar-id');
+
+        let selectedAvatar = [...avatars].find(avatar => avatar.getAttribute('data-avatar-id') === avatarInput.value);
+
+        if (selectedAvatar) {
+            previewAvatar.src = selectedAvatar.src;
+            avatarInput.value = selectedAvatar.getAttribute('data-avatar-id');
+        }
+        else {
+            previewAvatar.src = avatars[0].src;
+            avatarInput.value = avatars[0].getAttribute('data-avatar-id');
+        }
 
         avatars.forEach(avatar => {
             avatar.addEventListener('click', () => {
@@ -310,6 +319,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const fullNameInput = document.getElementById('fullNameInput');
         const previewFullname = document.getElementById('previewFullname');
+
+        if (fullNameInput.value){
+            previewFullname.textContent = fullNameInput.value;
+        }
 
         fullNameInput.addEventListener('input', () => {
             const fullName = fullNameInput.value;

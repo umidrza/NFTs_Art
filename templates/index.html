@@ -208,31 +208,34 @@
                         </div>
                     </div>
                 </div>
+
+                {% if request.user.is_authenticated %}
                 <div class="auction-terms">
                     <div class="term-check-icon">
-                        <i class="fa-solid fa-check check-icon hidden"></i>
+                        <i class="fa-solid fa-check check-icon"></i>
                     </div>
                     <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                 </div>
                 <div class="auction-buttons">
                     {% if request.user == auction.saler %}
                         <a href="{% url 'collection:auction_update' auction.id %}?next={{ request.path }}">
-                            <button class="auction-button btn-green" disabled>Update</button>
+                            <button class="auction-button btn-green">Update</button>
                         </a>         
                         <form action="{% url 'collection:auction_delete' auction.id %}" method="post">
                             {% csrf_token %}
-                            <button type="submit" class="auction-button btn-green delete-btn" disabled>Delete</button>
+                            <button type="submit" class="auction-button btn-green delete-btn">Delete</button>
                         </form>
                     {% elif status == 'auction' and request.user not in nft.collectors.all %}
                         <form action="{% url 'collection:auction_purchase' auction.id %}" method="post">
                             {% csrf_token %}
-                            <button class="auction-button btn-green" disabled>Purchase now</button>
+                            <button class="auction-button btn-green">Purchase now</button>
                         </form>
                         <a href="{% url 'collection:auction_bid' auction.id %}">
-                            <button class="auction-button btn-outline-green" disabled>Place a bid</button>
+                            <button class="auction-button btn-outline-green">Place a bid</button>
                         </a>
                     {% endif %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
