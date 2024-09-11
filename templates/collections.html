@@ -143,7 +143,9 @@
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
+                <a href="{% url 'collection:user_collections' collector.username %}">
+                    <img class="avatar-img" src="{{ collector.avatar.image.url }}">
+                </a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
@@ -171,7 +173,9 @@
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
+                <a href="{% url 'collection:user_collections' collector.username %}">
+                    <img class="avatar-img" src="{{ collector.avatar.image.url }}">
+                </a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
@@ -202,46 +206,6 @@
 {% block scripts %}
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.follow-btn').forEach((button) => {
-            button.addEventListener('click', () => {
-                const userId = button.getAttribute('data-user-id');
-                let url = '{% url "user:follow" 0 %}';
-                url = url.replace('0', userId);
-
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.querySelectorAll('.follow-btn').forEach(btn => {
-                        if (btn.getAttribute('data-user-id') == userId) {
-                            if (data.status == 'followed'){
-                                btn.classList.remove('btn-green');
-                                btn.classList.add('btn-outline-green');
-                                btn.textContent = 'Following';
-                            }
-                            else if (data.status === 'unfollowed') {
-                                btn.classList.remove('btn-outline-green');
-                                btn.classList.add('btn-green');
-                                btn.textContent = 'Follow';
-                            }
-                            const followersCountElement = btn.closest('.collection-card-detail').querySelector('.creator-followers-count');
-                            followersCountElement.textContent = data.follower_count;
-                        }
-                    });
-                });
-            });
-        });
-    });
-</script>
-
-<script>
     document.addEventListener('DOMContentLoaded', function() {
         function applyFilters() {
             const search = document.getElementById('collection-search').value;
@@ -265,8 +229,12 @@
             .then(response => response.json())
             .then(data => {
                 document.querySelector('.collection-cards').innerHTML = data.html;
+                document.querySelectorAll('.follow-btn').forEach((button) => {
+                    button.addEventListener('click', followCreator);
+                });
             })
             .catch(error => console.error('Error:', error));
+
         }
     
         document.getElementById('blockchains').addEventListener('change', applyFilters);
@@ -274,6 +242,45 @@
         document.getElementById('collection-search').addEventListener('keyup', applyFilters);
         const categoryCheckboxes = document.querySelectorAll('.collection-filter-checkbox');
         categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', applyFilters));
+
+        document.querySelectorAll('.follow-btn').forEach((button) => {
+            button.addEventListener('click', followCreator);
+        });
+
+        function followCreator(e) {
+            button = e.target;
+            const userId = button.getAttribute('data-user-id');
+            let url = '{% url "user:follow" 0 %}';
+            url = url.replace('0', userId);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelectorAll('.follow-btn').forEach(btn => {
+                    if (btn.getAttribute('data-user-id') == userId) {
+                        if (data.status == 'followed'){
+                            btn.classList.remove('btn-green');
+                            btn.classList.add('btn-outline-green');
+                            btn.textContent = 'Following';
+                        }
+                        else if (data.status === 'unfollowed') {
+                            btn.classList.remove('btn-outline-green');
+                            btn.classList.add('btn-green');
+                            btn.textContent = 'Follow';
+                        }
+                        const followersCountElement = btn.closest('.collection-card-detail').querySelector('.creator-followers-count');
+                        followersCountElement.textContent = data.follower_count;
+                    }
+                });
+            });
+        }
     });
 </script>
 

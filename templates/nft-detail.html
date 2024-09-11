@@ -116,12 +116,16 @@
                 </div>
 
                 {% if request.user.is_authenticated %}
-                <div class="auction-terms">
-                    <div class="term-check-icon">
-                        <i class="fa-solid fa-check check-icon"></i>
+
+                {% if status == 'auction' and request.user not in nft.collectors.all %}
+                    <div class="auction-terms">
+                        <div class="term-check-icon">
+                            <i class="fa-solid fa-check check-icon"></i>
+                        </div>
+                        <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
                     </div>
-                    <p class="auction-term">I Agree to AllBlocks. Term & Service</p>
-                </div>
+                {% endif %}
+                
                 <div class="auction-buttons">
                     {% if status != 'not-on-sale' %}
                         {% if request.user == auction.saler %}

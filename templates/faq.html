@@ -61,7 +61,9 @@
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
+                <a href="{% url 'collection:user_collections' collector.username %}">
+                    <img class="avatar-img" src="{{ collector.avatar.image.url }}">
+                </a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
@@ -89,7 +91,9 @@
         <div class="top-collector">
             <p class="top-collector-place"></p>
             <div class="avatar">
-                <a href="#"><img class="avatar-img" src="{{ collector.avatar.image.url }}" alt=""></a>
+                <a href="{% url 'collection:user_collections' collector.username %}">
+                    <img class="avatar-img" src="{{ collector.avatar.image.url }}">
+                </a>
                 <div class="avatar-icons">
                     <div class="verified-icon">
                         <i class="star-icon"></i>
