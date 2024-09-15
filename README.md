@@ -22,7 +22,7 @@
     pip install -r requirements.txt
     ```
 
-4. Create the `.env` file for email configuration:
+4. Create the `.env` file for email configuration (optional):
 
     Create a `.env` file in the root directory of your project with the following variables to set up email functionality:
 

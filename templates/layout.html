@@ -36,7 +36,7 @@
                         <a class="nav-button" href="{% url 'collection:nft_create' %}"><button class="btn-green">Create</button></a>
                         <div class="avatar nav-button">
                             <a href="{% url 'user:update_profile' %}">
-                                <img class="avatar-img" src="{{ user.avatar.image.url }}" alt="">
+                                <img class="avatar-img" src="{{ user.avatar.image.url }}">
                             </a>
                             <div class="avatar-icons">
                                 <div class="verified-icon">
@@ -47,9 +47,7 @@
                         </div>
                     {% else %}
                         <a class="nav-button" href="{% url 'user:login' %}?next={{ request.path }}">
-                            <a href="{% url 'user:login' %}?next={{ request.path }}">
-                                <button class="btn-green">Login</button>
-                            </a>
+                            <button class="btn-green">Login</button>
                         </a>
                     {% endif %}
 
@@ -63,7 +61,9 @@
                 <div class="nav-menu-buttons">
                     {% if request.user.is_authenticated %}
                         <div class="avatar">
-                            <a href="{% url 'user:update_profile' %}"><img class="avatar-img" src="{{ user.avatar.image.url }}" alt=""></a>
+                            <a href="{% url 'user:update_profile' %}">
+                                <img class="avatar-img" src="{{ user.avatar.image.url }}">
+                            </a>
                             <div class="avatar-icons">
                                 <div class="verified-icon">
                                     <i class="star-icon"></i>
