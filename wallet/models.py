@@ -18,7 +18,7 @@ class Provider(models.Model):
         return self.name
 
 class Wallet(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wallets')
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE)
     key = models.CharField(max_length=15, unique=True)

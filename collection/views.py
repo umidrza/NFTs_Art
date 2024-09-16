@@ -420,6 +420,11 @@ def auction_purchase(request, auction_id):
     wallet.balance -= auction.price
     wallet.save()
 
+    creator_wallet = Wallet.objects.get(user=auction.saler)
+    if creator_wallet:
+        creator_wallet.balance += auction.price
+        creator_wallet.save()
+
     nft.collectors.add(request.user)
 
     messages.success(request, f"You have successfully purchased {nft.name}.")
