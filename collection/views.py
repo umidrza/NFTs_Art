@@ -420,7 +420,7 @@ def auction_purchase(request, auction_id):
     wallet.balance -= auction.price
     wallet.save()
 
-    creator_wallet = Wallet.objects.get(user=auction.saler)
+    creator_wallet = Wallet.objects.filter(user=auction.saler).first()
     if creator_wallet:
         creator_wallet.balance += auction.price
         creator_wallet.save()
