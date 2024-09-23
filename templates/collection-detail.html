@@ -11,7 +11,13 @@
         <div class="collection-cards-filters">
             <div class="collection-creators-filters">
                 <div class="collection-creators">
-                    <h2 class="collection-creators-title">The Best Collectors for <br>NFTs</h2>
+                    <h2 class="collection-creators-title">
+                        {% if username %}
+                            {{ collector.fullname }}'s NFTs
+                        {% else %}
+                            The Best Collectors for <br>NFTs
+                        {% endif %}
+                    </h2>
                     <div class="collection-creator">
                         <a href="{% url 'collection:user_collections' collector.username %}">
                             <div class="avatar">
@@ -44,7 +50,7 @@
                                         <h5 class="creator-followers-count">{{ collector.followers.count }}</h5>
                                     </div>
                                 </div>
-                                {% if request.user.is_authenticated %}
+                                {% if request.user.is_authenticated and not username %}
                                 {% if request.user == collector %}
                                     <a href="{% url 'collection:user_nfts' collector.username %}">
                                         <button class="btn-green collection-card-btn">My NFTs</button>

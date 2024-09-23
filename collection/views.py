@@ -139,6 +139,9 @@ def collection_detail(request, id=None, username=None):
     elif sort_by == 'name-desc':
         nfts = nfts.order_by('-name')
 
+    if sort_by == 'price-asc' or sort_by == 'price-desc' or min_value or max_value:
+        nfts = [nft for nft in nfts if nft.get_status() == 'auction']
+    
     if status_filters:
         nfts = [nft for nft in nfts if nft.get_status() in status_filters]
 
@@ -169,6 +172,7 @@ def collection_detail(request, id=None, username=None):
         'sort_by': sort_by,
         'top_collectors_1': top_collectors_1,
         'top_collectors_2': top_collectors_2,
+        'username': username,
     }
     return render(request, 'collection-detail.html', context)
 

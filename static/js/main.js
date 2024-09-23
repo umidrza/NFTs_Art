@@ -385,6 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (pageWidth > 992) { 
                     updateCardCounts(2, 2);
                 }
+                collectionFilters.classList.remove('layout-2');
                 collectionFilters.classList.remove('layout-3');
             } else if (switch2 && switch2.checked) {
                 if (pageWidth > 1200) { 
@@ -392,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (pageWidth > 992) {
                     updateCardCounts(3, 2);
                 }
+                collectionFilters.classList.add('layout-2');
                 collectionFilters.classList.remove('layout-3');
             } else if (switch3 && switch3.checked) {
                 if (pageWidth > 1200) { 
@@ -399,6 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (pageWidth > 992) {
                     updateCardCounts(3, 3);
                 }
+                collectionFilters.classList.remove('layout-2');
                 collectionFilters.classList.add('layout-3');
             }
         }

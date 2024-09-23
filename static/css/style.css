@@ -1669,6 +1669,18 @@ tr.spacing td {
     width: 100%;
 }
 
+.layout-2 .nft-status .nft-price{
+    font-size: 16px;
+}
+
+.layout-2 .nft-status p{
+    font-size: 12px;
+}
+
+.layout-2 .nft-time .countdown{
+    font-size: 10px;
+}
+
 .collection-creators-filters {
     display: flex;
     flex-direction: column;
