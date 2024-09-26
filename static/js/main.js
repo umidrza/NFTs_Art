@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     const conversionRates = {
-        ethToUsd: 3497.43
+        ethToUsd: 2637.50
     };
 
     // fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd')
@@ -96,6 +96,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const textElement = moreButton.parentElement.querySelector('.extra-content');
         const fullText = textElement.innerHTML;
         const length = +textElement.getAttribute('data-length');
+
+        if (length >= fullText.length){
+            moreButton.classList.add('hidden');
+            return;
+        }
+
         textElement.innerHTML = truncateText(fullText, length);
         let isTruncated = true;
 
@@ -371,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const switch1 = document.getElementById('switch1');
         const switch2 = document.getElementById('switch2');
         const switch3 = document.getElementById('switch3');
-        const pageWidth = window.innerWidth;
+        let pageWidth = window.innerWidth;
         
         function updateCardCounts(cardsCount, collectionCount) {
             root.style.setProperty('--nft-cards-count', cardsCount);
@@ -379,6 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         function handleSwitchChange() {
+            pageWidth = window.innerWidth;
             if (switch1 && switch1.checked) {
                 if (pageWidth > 1200) { 
                     updateCardCounts(3, 3);

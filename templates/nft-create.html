@@ -41,7 +41,10 @@
                             <label for="blockchain" class="form-label">Blockchain</label>
                             <select name="blockchain" id="blockchain" class="form-select">
                             {% for blockchain in blockchains %}
-                                <option class="form-option" value="{{ blockchain.id }}">{{ blockchain.name }}</option>
+                                <option class="form-option" value="{{ blockchain.id }}"
+                                {% if form.blockchain.value|stringformat:"s" == blockchain.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ blockchain.name }}
+                                </option>
                             {% endfor %}
                             </select>
                             {% if form.blockchain.errors %}
@@ -58,7 +61,7 @@
                         <div class="form-control">
                             <label for="image" class="form-label">Upload image</label>
                             <div class="upload-image">
-                                <input name="image" type="file" id="upload-image-input" accept="image/*" class="hidden" />
+                                <input name="image" type="file" id="upload-image-input" accept="image/*" class="hidden" {% if form.image.value %}value="{{ form.image.value }}"{% endif %}/>
                                 <button type="button" class="btn-outline-green"
                                     onclick="document.getElementById('upload-image-input').click();">Upload Image</button>
                                 <p class="form-text-grey">PNG, GIF, WEBP, JPEG. Max 100mb.</p>
@@ -76,7 +79,7 @@
                         
                         <div class="form-control">
                             <label for="name" class="form-label">Name of NFTs</label>
-                            <input type="text" name="name" class="form-input" placeholder="Type here..." required>
+                            <input type="text" name="name" class="form-input" placeholder="Type here..." required {% if form.name.value %}value="{{ form.name.value }}"{% endif %}>
                             {% if form.name.errors %}
                                 <div class="form-error">
                                     <ul>
@@ -90,7 +93,7 @@
                         
                         <div class="form-control">
                             <label for="description" class="form-label">Description</label>
-                            <textarea name="description" class="form-textarea" placeholder="Type here..." required></textarea>
+                            <textarea name="description" class="form-textarea" placeholder="Type here...">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
                             {% if form.description.errors %}
                                 <div class="form-error">
                                     <ul>

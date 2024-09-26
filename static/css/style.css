@@ -1803,6 +1803,7 @@ tr.spacing td {
     padding: 8px 24px;
     font-size: 14px;
     height: 40px;
+    
 }
 
 .collection-filters {
@@ -2159,6 +2160,7 @@ tr.spacing td {
     align-items: center;
     align-self: stretch;
     width: 100%;
+    overflow: hidden;
 }
 
 .collection-card-images {
@@ -2735,7 +2737,7 @@ input[type='number']::-webkit-outer-spin-button {
     height: 80px;
     position: relative;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 2px solid transparent;
     border-radius: 16px;
 }
 
